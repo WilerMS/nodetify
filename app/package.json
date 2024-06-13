@@ -12,7 +12,8 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "turbo": "^2.0.3"
+    "turbo": "^2.0.3",
+    "vite-tsconfig-paths": "4.3.2"
   },
   "packageManager": "npm@9.6.7"
 }
