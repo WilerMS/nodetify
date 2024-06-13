@@ -2,14 +2,17 @@ version: "3.8"
 
 services:
   app:
-    container_name: nodetify-prod
+    container_name: nodetify-dev
     restart: always
-    image: nodetify-prod
+    image: nodetify-dev
     build:
       context: ../app
       dockerfile: Dockerfile.dev
     ports:
+      - 4000:4000
       - 3000:3000
     environment:
-      - NODE_ENV=production
-    command: "npm start"
+      - NODE_ENV=development
+    volumes:
+      - "../app:/app"
+    command: "npm run dev"
