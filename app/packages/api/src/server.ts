@@ -22,7 +22,7 @@ app.get('/', (req, res) => {
 })
 
 // Api Routes
-app.get('/test', errorHandler((req, res) => {
+app.get('/api/test', errorHandler((req, res) => {
   return res.json({ message: 'Hola' })
 }))
 
