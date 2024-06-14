@@ -7,7 +7,7 @@ services:
     image: nodetify-prod
     build:
       context: ../app
-      dockerfile: Dockerfile.dev
+      dockerfile: Dockerfile
     ports:
       - 3000:3000
     environment:
