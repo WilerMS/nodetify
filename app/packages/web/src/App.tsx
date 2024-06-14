@@ -1,13 +1,12 @@
 import { useEffect, useState } from 'react'
-import './App.css'
 
-function App() {
-  const [text, setText] = useState()
+function App () {
+  const [text, setText] = useState<any>()
 
   useEffect(() => {
     fetch('/api/test')
-      .then(res => res.json())
-      .then(data => setText(data))
+      .then(async res => await res.json())
+      .then(data => { setText(data) })
   }, [])
 
   return (
