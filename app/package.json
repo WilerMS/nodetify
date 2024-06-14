@@ -6,7 +6,8 @@
     "packages/*"
   ],
   "scripts": {
-    "dev": "turbo dev",
+    "dev:old": "turbo dev",
+    "dev": "npm run dev --workspace=api & npm run dev --workspace=web",
     "build": "turbo build",
     "start": "turbo build && node packages/api/dist/server.js",
     "eslint": "eslint --init"
