@@ -1,5 +1,3 @@
-import { config } from 'dotenv'
+export const PORT = process.env.PORT ?? 4321
 
-config()
-
-export const PORT = process.env.PORT ?? 3000
+console.log(process.env)

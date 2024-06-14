@@ -1,3 +1,4 @@
+import { config } from 'dotenv'
 import './config-paths'
 import { PORT } from '@/constants/env'
 import express from 'express'
@@ -6,6 +7,8 @@ import cors from 'cors'
 import path from 'path'
 
 import { errorHandler, errorMiddleware } from '@/middlewares'
+
+config()
 
 const app = express()
 
@@ -25,7 +28,6 @@ app.get('/', (req, res) => {
 app.get('/api/test', errorHandler((req, res) => {
   return res.json({ message: 'Hola' })
 }))
-
 
 // Error handling
 app.use(errorMiddleware)
