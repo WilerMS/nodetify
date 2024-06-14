@@ -9,7 +9,8 @@ services:
       context: ../app
       dockerfile: Dockerfile
     ports:
-      - 3000:3000
+      - 4321:4321
     environment:
       - NODE_ENV=production
+      - PORT=4321
     command: "npm start"
