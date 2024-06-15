@@ -1,12 +1,16 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
-import App from './App.tsx'
+import { NextUIProvider } from '@nextui-org/react'
+
+import App from './App'
 import './index.css'
 
 const root = document.getElementById('root') as HTMLDivElement
 
 ReactDOM.createRoot(root).render(
   <React.StrictMode>
-    <App />
+    <NextUIProvider>
+      <App />
+    </NextUIProvider>
   </React.StrictMode>
 )
