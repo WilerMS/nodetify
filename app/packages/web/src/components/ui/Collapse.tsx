@@ -34,7 +34,7 @@ export const Collapse: FC<CollapseProps> = ({
           'overflow-hidden transition-height duration-300 ease-in pl-5',
           {
             'h-0': !isExpanded,
-            'h-[130px]': isExpanded
+            'h-[160px]': isExpanded
           }
         )}
       >

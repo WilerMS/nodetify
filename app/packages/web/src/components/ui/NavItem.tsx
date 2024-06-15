@@ -9,13 +9,13 @@ export const NavItem: FC<NavItemProps> = ({ isActive, children, ...props }) => {
   return (
     <div
       className={cn(
-        'flex gap-2 py-2 px-3 rounded-lg truncate',
-        'active:scale-95 transition-transform duration-200',
+        'flex items-center gap-2 py-3 px-3 rounded-lg truncate text-gray-700',
+        'active:scale-95 transition-all duration-200',
         {
           'hover:bg-gray-200': !isActive,
           'bg-blue-100': isActive,
-          'font-normal': isActive,
-          'font-light': !isActive
+          'font-bold': isActive,
+          'font-normal': !isActive
         }
       )}
       {...props}

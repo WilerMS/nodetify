@@ -23,8 +23,8 @@ export const NavDropdownItem: FC<NavDropdownItemProps> = ({
     <Collapse
       title={
         <NavItem>
-          <div className='w-full flex items-center gap-2'>
-            {icon}
+          <div className='w-full flex-shrink-0 flex items-center gap-2'>
+            <div>{icon}</div>
             {title}
             <div className='w-full flex justify-end'>
               {isExpanded
