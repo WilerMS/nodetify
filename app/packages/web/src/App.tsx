@@ -1,19 +1,16 @@
-import { useEffect, useState } from 'react'
+import { RouterProvider, createRouter } from '@tanstack/react-router'
+import { routeTree } from './routeTree.gen'
 
-function App () {
-  const [text, setText] = useState<any>()
+const router = createRouter({ routeTree })
 
-  useEffect(() => {
-    fetch('/api/test')
-      .then(async res => await res.json())
-      .then(data => { setText(data) })
-  }, [])
-
-  return (
-    <>
-      {JSON.stringify(text)}
-    </>
-  )
+declare module '@tanstack/react-router' {
+  interface Register {
+    router: typeof router
+  }
 }
 
-export default App
+export default function App () {
+  return (
+    <RouterProvider router={router} />
+  )
+}
