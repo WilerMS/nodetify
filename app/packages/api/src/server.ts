@@ -1,14 +1,12 @@
-import { config } from 'dotenv'
 import './config-paths'
-import { PORT } from '@/constants/env'
+import { PORT } from '@/config/env'
 import express from 'express'
 import morgan from 'morgan'
 import cors from 'cors'
 import path from 'path'
 
+import { Example } from '@/models/Example'
 import { errorHandler, errorMiddleware } from '@/middlewares'
-
-config()
 
 const app = express()
 
@@ -20,13 +18,15 @@ app.use(express.json())
 const publicUrl = path.join(__dirname, '../../', 'web/dist')
 app.use(express.static(publicUrl))
 
-app.get('/', (req, res) => {
+app.get('/', (_req, res) => {
   res.sendFile(path.join(__dirname, publicUrl, 'index.html'))
 })
 
 // Api Routes
-app.get('/api/test', errorHandler((req, res) => {
-  return res.json({ message: 'Hola' })
+app.get('/api/test', errorHandler(async (_req, res) => {
+  const [data] = await Example.query().select('*')
+
+  return res.json({ message: data.message })
 }))
 
 // Error handling
