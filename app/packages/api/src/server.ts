@@ -1,12 +1,12 @@
 import './config-paths'
-import { PORT } from '@/config/env'
 import express from 'express'
 import morgan from 'morgan'
 import cors from 'cors'
 import path from 'path'
 
-import { Example } from '@/models/Example'
-import { errorHandler, errorMiddleware } from '@/middlewares'
+import { PORT } from '@/config/env'
+import { errorMiddleware } from '@/middlewares'
+import { apiV1Router } from '@/routes/v1'
 
 const app = express()
 
@@ -15,19 +15,18 @@ app.use(cors())
 app.use(morgan('dev'))
 app.use(express.json())
 
+// static files
 const publicUrl = path.join(__dirname, '../../', 'web/dist')
 app.use(express.static(publicUrl))
 
-app.get('/', (_req, res) => {
+app.get('/', (_, res) => {
   res.sendFile(path.join(__dirname, publicUrl, 'index.html'))
 })
 
-// Api Routes
-app.get('/api/test', errorHandler(async (_req, res) => {
-  const [data] = await Example.query().select('*')
+// authentication
 
-  return res.json({ message: data.message })
-}))
+// api Routes
+app.use('/api/v1', apiV1Router)
 
 // Error handling
 app.use(errorMiddleware)
