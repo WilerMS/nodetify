@@ -1,3 +1,4 @@
+export * from './Logo'
 export * from './Collapse'
 export * from './NavLink'
 export * from './NavItem'
