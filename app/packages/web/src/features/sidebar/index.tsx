@@ -1,55 +1,101 @@
-import { NavDropdownItem, NavLink } from '@/components/ui'
-import { IconHome, IconDatabase, IconAlarm, IconSettings, IconHelpCircle } from '@tabler/icons-react'
+import cn from 'classnames'
+import { useState } from 'react'
+import { Divider } from '@nextui-org/divider'
+import {
+  IconHome,
+  IconDatabase,
+  IconAlarm,
+  IconSettings,
+  IconHelpCircle,
+  IconChevronLeft,
+  IconChevronRight,
+  IconDashboard,
+  IconLayoutSidebarRightCollapse,
+  IconLayoutSidebarLeftCollapse
+} from '@tabler/icons-react'
+
+import { Logo, NavDropdownItem, NavItem, NavLink } from '@/components/ui'
 
 export const SideBar = () => {
+  const [expanded, setExpanded] = useState(true)
+
+  const handleToggleExpanded = () => setExpanded(prev => !prev)
+
   return (
-    <aside className="h-screen w-[250px] flex-shrink-0 border-r-2 px-4 py-8">
-      <div>
-        <h2 className='text-2xl'>Nodetify</h2>
+    <aside
+      className={cn(
+        'h-screen flex flex-col flex-shrink-0 transition-width',
+        {
+          'w-[250px]': expanded,
+          'w-[87px]': !expanded
+        }
+      )}
+    >
+      <div className='h-[75px] w-full flex-col center relative'>
+        <Logo className='pt-[5px]' showTitle={expanded} />
       </div>
 
-      <nav className='flex flex-col gap-2 mt-10'>
-        <NavLink to='/' icon={<IconHome size={20} />}>
-          <span>Home</span>
-        </NavLink>
+      <nav className='h-full flex flex-col gap-2 px-4 py-4'>
 
-        <h3 className='font-medium text-sm my-1'>Main Menu</h3>
+        <NavLink
+          to='/'
+          title='Dashboard'
+          showTitle={expanded}
+          icon={<IconDashboard size={30} />}
+        />
 
-        <NavLink to='/databases' icon={<IconDatabase size={20} />}>
-          <span>Databases</span>
-        </NavLink>
+        <NavLink
+          to='/databases'
+          title='Databases'
+          showTitle={expanded}
+          icon={<IconDatabase size={30} />}
+        />
 
-        <NavLink to='/alarms' icon={<IconAlarm size={20} />}>
-          <span>Summary of Alarms</span>
-        </NavLink>
+        <NavLink
+          to='/alarms'
+          title='Summary of Alarms'
+          showTitle={expanded}
+          icon={<IconAlarm size={30} />}
+        />
 
-        <h3 className='font-medium text-sm my-1'>General</h3>
-
-        <NavLink to='/settings' icon={<IconSettings size={20} />}>
-          <span>Settings</span>
-        </NavLink>
+        <NavLink
+          to='/settings'
+          title='Settings'
+          showTitle={expanded}
+          icon={<IconSettings size={30} />}
+        />
 
         <NavDropdownItem
-          icon={<IconHelpCircle size={20} />}
-          title={<span>Support</span>}
+          icon={<IconHelpCircle size={30} />}
+          title='Support'
+          collapsed={!expanded}
+          onExpand={() => setExpanded(true)}
           defaultOpen
         >
-          <NavLink to='/support/docs'>
-            <span>Documentation</span>
-          </NavLink>
-          <NavLink to='/support/tutorials'>
-            <span>Tutorials and Guides</span>
-          </NavLink>
-          <NavLink to='/support/contact'>
-            <span>Contact Support</span>
-          </NavLink>
+          <NavLink to='/support/docs' title='Documentation' />
+          <NavLink to='/support/tutorials' title='Tutorials and Guides' />
+          <NavLink to='/support/contact' title='Contact Support' />
         </NavDropdownItem>
 
-        <h3 className='font-medium text-sm my-1'>Updates</h3>
+        <NavLink
+          to='/support/contact'
+          title='Changes'
+          showTitle={expanded}
+          icon={<IconHome size={30} />}
+        />
 
-        <NavLink to='/support/contact' icon={<IconHome size={20} />}>
-          <span>Changes</span>
-        </NavLink>
+        <div className='flex-grow'></div>
+
+        <button
+          className='center gap-12 px-3 text-gray-600 hover:text-gray-800 hover:bg-gray-100 py-3 transition-all'
+          onClick={handleToggleExpanded}
+        >
+          {expanded && <span className='truncate'>Collapse Menu</span>}
+          {expanded
+            ? <IconLayoutSidebarLeftCollapse size={30} />
+            : <IconLayoutSidebarRightCollapse size={30} />
+          }
+        </button>
 
       </nav>
     </aside>
