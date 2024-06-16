@@ -9,13 +9,13 @@ export const Route = createRootRoute({
     <div className='main-layout w-screen h-screen'>
       <div className="app w-full h-full flex">
         <SideBar />
-        <div className='w-full'>
+        <div className='w-full h-full flex flex-col'>
           <Header />
-          <main>
+          <main className='w-full h-full bg-gray-100'>
             <Outlet />
           </main>
         </div>
-        <TanStackRouterDevtools />
+        <TanStackRouterDevtools position='bottom-right' />
       </div>
     </div>
   )
