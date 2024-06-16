@@ -3,12 +3,12 @@ import { IconHome, IconDatabase, IconAlarm, IconSettings, IconHelpCircle } from 
 
 export const SideBar = () => {
   return (
-    <aside className="h-screen w-[250px] border-r-2 px-4 py-8">
+    <aside className="h-screen w-[250px] flex-shrink-0 border-r-2 px-4 py-8">
       <div>
         <h2 className='text-2xl'>Nodetify</h2>
       </div>
 
-      <nav className='flex flex-col gap-2 mt-6'>
+      <nav className='flex flex-col gap-2 mt-10'>
         <NavLink to='/' icon={<IconHome size={20} />}>
           <span>Home</span>
         </NavLink>
