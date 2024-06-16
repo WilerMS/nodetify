@@ -1,9 +1,10 @@
-import React, { type FC, useState } from 'react'
+import React, { type FC, useState, useEffect } from 'react'
 import cn from 'classnames'
 
 interface CollapseProps extends React.PropsWithChildren {
   title: React.ReactNode
   defaultOpen?: boolean
+  forceClosed?: boolean
   onToggle: (expanded: boolean) => void
 }
 
@@ -11,9 +12,17 @@ export const Collapse: FC<CollapseProps> = ({
   title,
   defaultOpen = false,
   children,
+  forceClosed,
   onToggle
 }) => {
   const [isExpanded, setIsExpanded] = useState(defaultOpen)
+
+  useEffect(() => {
+    if (forceClosed) {
+      onToggle(false)
+      setIsExpanded(false)
+    }
+  }, [forceClosed])
 
   const handleToggle = () => {
     const expanded = !isExpanded
