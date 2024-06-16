@@ -1,17 +1,15 @@
 import cn from 'classnames'
 import { useState } from 'react'
-import { Divider } from '@nextui-org/divider'
 import {
-  IconHome,
   IconDatabase,
   IconAlarm,
   IconSettings,
   IconHelpCircle,
-  IconChevronLeft,
-  IconChevronRight,
   IconDashboard,
-  IconLayoutSidebarRightCollapse,
-  IconLayoutSidebarLeftCollapse
+  IconMailExclamation,
+  IconLogout2,
+  IconChevronLeft,
+  IconChevronRight
 } from '@tabler/icons-react'
 
 import { Logo, NavDropdownItem, NavItem, NavLink } from '@/components/ui'
@@ -24,7 +22,7 @@ export const SideBar = () => {
   return (
     <aside
       className={cn(
-        'h-screen flex flex-col flex-shrink-0 transition-width',
+        'group h-screen flex flex-col flex-shrink-0 transition-width',
         {
           'w-[250px]': expanded,
           'w-[87px]': !expanded
@@ -33,10 +31,23 @@ export const SideBar = () => {
     >
       <div className='h-[75px] w-full flex-col center relative'>
         <Logo className='pt-[5px]' showTitle={expanded} />
+        <button
+          className={cn(
+            'w-[25px] h-[25px] absolute right-[-13px] mt-[5px] ',
+            'hidden shadow border center rounded-full bg-gray-100 transition-all',
+            'group-hover:block active:scale-95 duration-100'
+
+          )}
+          onClick={handleToggleExpanded}
+        >
+          {expanded
+            ? <IconChevronLeft className='ml-[2px]' size={18} />
+            : <IconChevronRight className='ml-[3px]' size={18} />
+          }
+        </button>
       </div>
 
       <nav className='h-full flex flex-col gap-2 px-4 py-4'>
-
         <NavLink
           to='/'
           title='Dashboard'
@@ -59,11 +70,13 @@ export const SideBar = () => {
         />
 
         <NavLink
-          to='/settings'
-          title='Settings'
+          to='/notifications'
+          title='Notifications'
           showTitle={expanded}
-          icon={<IconSettings size={30} />}
+          icon={<IconMailExclamation size={30} />}
         />
+
+        <div className='flex-grow'></div>
 
         <NavDropdownItem
           icon={<IconHelpCircle size={30} />}
@@ -78,24 +91,16 @@ export const SideBar = () => {
         </NavDropdownItem>
 
         <NavLink
-          to='/support/contact'
-          title='Changes'
+          to='/settings'
+          title='Settings'
           showTitle={expanded}
-          icon={<IconHome size={30} />}
+          icon={<IconSettings size={30} />}
         />
 
-        <div className='flex-grow'></div>
-
-        <button
-          className='center gap-12 px-3 text-gray-600 hover:text-gray-800 hover:bg-gray-100 py-3 transition-all'
-          onClick={handleToggleExpanded}
-        >
-          {expanded && <span className='truncate'>Collapse Menu</span>}
-          {expanded
-            ? <IconLayoutSidebarLeftCollapse size={30} />
-            : <IconLayoutSidebarRightCollapse size={30} />
-          }
-        </button>
+        <NavItem className='hover:bg-red-100 text-red-600 cursor-pointer'>
+          <IconLogout2 className='-ml-[3px]' size={30} />
+          {expanded && <span className='truncate'>Log out</span>}
+        </NavItem>
 
       </nav>
     </aside>
