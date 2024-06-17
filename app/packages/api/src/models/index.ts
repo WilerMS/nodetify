@@ -1,3 +1,4 @@
+export { User } from './User'
 export { Severity } from './Severity'
 export { Database } from './Database'
 export { Alarm } from './Alarm'
