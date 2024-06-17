@@ -1,3 +1,14 @@
+CREATE TABLE "user" (
+  id SERIAL PRIMARY KEY,
+  name TEXT NOT NULL,
+  username TEXT NOT NULL,
+  password TEXT NOT NULL,
+  image TEXT,
+  birth_date TIMESTAMP
+);
+
+INSERT INTO severity (name, username, password) VALUES ('default user', 'root', 'root');
+
 CREATE TABLE severity (
   id SERIAL PRIMARY KEY,
   description TEXT NOT NULL,
