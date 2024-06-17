@@ -17,7 +17,9 @@ CREATE TABLE database (
   name TEXT NOT NULL,
   description TEXT,
   type TEXT CHECK (type IN ('PostgreSQL', 'MySQL', 'MariaDB', 'SQLite', 'SQLServer', 'Oracle')),
+  status TEXT CHECK (status IN ('active', 'inactive', 'connecting', 'error')) DEFAULT 'connecting',
   connection JSON NOT NULL,
+  last_checked_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );

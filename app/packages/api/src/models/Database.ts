@@ -9,7 +9,9 @@ export class Database extends Model {
   name!: string
   description?: string
   type!: 'PostgreSQL' | 'MySQL' | 'MariaDB' | 'SQLite' | 'SQLServer' | 'Oracle'
+  status!: 'active' | 'inactive' | 'connecting' | 'error'
   connection!: DatabaseConnection
+  last_checked_at!: string
   created_at!: string
   updated_at!: string
 
