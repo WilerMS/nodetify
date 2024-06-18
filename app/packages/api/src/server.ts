@@ -1,8 +1,9 @@
 import './config-paths'
+import path from 'path'
 import express from 'express'
 import morgan from 'morgan'
 import cors from 'cors'
-import path from 'path'
+import cookieParser from 'cookie-parser'
 
 import { PORT } from '@/config/env'
 import { errorMiddleware } from '@/middlewares'
@@ -14,6 +15,7 @@ const app = express()
 app.use(cors())
 app.use(morgan('dev'))
 app.use(express.json())
+app.use(cookieParser())
 
 // static files
 const publicUrl = path.join(__dirname, '../../', 'web/dist')
