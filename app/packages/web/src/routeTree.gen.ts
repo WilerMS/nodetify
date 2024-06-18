@@ -11,116 +11,156 @@
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
-import { Route as IndexImport } from './routes/index'
-import { Route as NotificationsIndexImport } from './routes/notifications/index'
-import { Route as DatabasesIndexImport } from './routes/databases/index'
-import { Route as AlarmsIndexImport } from './routes/alarms/index'
-import { Route as MoreSettingsImport } from './routes/_more/settings'
-import { Route as MoreSupportTutorialsImport } from './routes/_more/support/tutorials'
-import { Route as MoreSupportDocsImport } from './routes/_more/support/docs'
-import { Route as MoreSupportContactImport } from './routes/_more/support/contact'
+import { Route as protectedImport } from './routes/(protected)'
+import { Route as protectedIndexImport } from './routes/(protected)/index'
+import { Route as authRegisterImport } from './routes/(auth)/register'
+import { Route as authLoginImport } from './routes/(auth)/login'
+import { Route as protectedSettingsIndexImport } from './routes/(protected)/settings/index'
+import { Route as protectedNotificationsIndexImport } from './routes/(protected)/notifications/index'
+import { Route as protectedDatabasesIndexImport } from './routes/(protected)/databases/index'
+import { Route as protectedAlarmsIndexImport } from './routes/(protected)/alarms/index'
+import { Route as protectedSupportTutorialsImport } from './routes/(protected)/support/tutorials'
+import { Route as protectedSupportDocsImport } from './routes/(protected)/support/docs'
+import { Route as protectedSupportContactImport } from './routes/(protected)/support/contact'
 
 // Create/Update Routes
 
-const IndexRoute = IndexImport.update({
+const protectedRoute = protectedImport.update({
+  id: '/(protected)',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const protectedIndexRoute = protectedIndexImport.update({
   path: '/',
+  getParentRoute: () => protectedRoute,
+} as any)
+
+const authRegisterRoute = authRegisterImport.update({
+  path: '/register',
   getParentRoute: () => rootRoute,
 } as any)
 
-const NotificationsIndexRoute = NotificationsIndexImport.update({
-  path: '/notifications/',
+const authLoginRoute = authLoginImport.update({
+  path: '/login',
   getParentRoute: () => rootRoute,
 } as any)
 
-const DatabasesIndexRoute = DatabasesIndexImport.update({
+const protectedSettingsIndexRoute = protectedSettingsIndexImport.update({
+  path: '/settings/',
+  getParentRoute: () => protectedRoute,
+} as any)
+
+const protectedNotificationsIndexRoute =
+  protectedNotificationsIndexImport.update({
+    path: '/notifications/',
+    getParentRoute: () => protectedRoute,
+  } as any)
+
+const protectedDatabasesIndexRoute = protectedDatabasesIndexImport.update({
   path: '/databases/',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => protectedRoute,
 } as any)
 
-const AlarmsIndexRoute = AlarmsIndexImport.update({
+const protectedAlarmsIndexRoute = protectedAlarmsIndexImport.update({
   path: '/alarms/',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => protectedRoute,
 } as any)
 
-const MoreSettingsRoute = MoreSettingsImport.update({
-  path: '/settings',
-  getParentRoute: () => rootRoute,
-} as any)
-
-const MoreSupportTutorialsRoute = MoreSupportTutorialsImport.update({
+const protectedSupportTutorialsRoute = protectedSupportTutorialsImport.update({
   path: '/support/tutorials',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => protectedRoute,
 } as any)
 
-const MoreSupportDocsRoute = MoreSupportDocsImport.update({
+const protectedSupportDocsRoute = protectedSupportDocsImport.update({
   path: '/support/docs',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => protectedRoute,
 } as any)
 
-const MoreSupportContactRoute = MoreSupportContactImport.update({
+const protectedSupportContactRoute = protectedSupportContactImport.update({
   path: '/support/contact',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => protectedRoute,
 } as any)
 
 // Populate the FileRoutesByPath interface
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/': {
+    '/(protected)': {
       id: '/'
       path: '/'
       fullPath: '/'
-      preLoaderRoute: typeof IndexImport
+      preLoaderRoute: typeof protectedImport
       parentRoute: typeof rootRoute
     }
-    '/_more/settings': {
-      id: '/_more/settings'
-      path: '/settings'
-      fullPath: '/settings'
-      preLoaderRoute: typeof MoreSettingsImport
+    '/(auth)/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof authLoginImport
       parentRoute: typeof rootRoute
     }
-    '/alarms/': {
+    '/(auth)/register': {
+      id: '/register'
+      path: '/register'
+      fullPath: '/register'
+      preLoaderRoute: typeof authRegisterImport
+      parentRoute: typeof rootRoute
+    }
+    '/(protected)/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof protectedIndexImport
+      parentRoute: typeof protectedImport
+    }
+    '/(protected)/support/contact': {
+      id: '/support/contact'
+      path: '/support/contact'
+      fullPath: '/support/contact'
+      preLoaderRoute: typeof protectedSupportContactImport
+      parentRoute: typeof protectedImport
+    }
+    '/(protected)/support/docs': {
+      id: '/support/docs'
+      path: '/support/docs'
+      fullPath: '/support/docs'
+      preLoaderRoute: typeof protectedSupportDocsImport
+      parentRoute: typeof protectedImport
+    }
+    '/(protected)/support/tutorials': {
+      id: '/support/tutorials'
+      path: '/support/tutorials'
+      fullPath: '/support/tutorials'
+      preLoaderRoute: typeof protectedSupportTutorialsImport
+      parentRoute: typeof protectedImport
+    }
+    '/(protected)/alarms/': {
       id: '/alarms/'
       path: '/alarms'
       fullPath: '/alarms'
-      preLoaderRoute: typeof AlarmsIndexImport
-      parentRoute: typeof rootRoute
+      preLoaderRoute: typeof protectedAlarmsIndexImport
+      parentRoute: typeof protectedImport
     }
-    '/databases/': {
+    '/(protected)/databases/': {
       id: '/databases/'
       path: '/databases'
       fullPath: '/databases'
-      preLoaderRoute: typeof DatabasesIndexImport
-      parentRoute: typeof rootRoute
+      preLoaderRoute: typeof protectedDatabasesIndexImport
+      parentRoute: typeof protectedImport
     }
-    '/notifications/': {
+    '/(protected)/notifications/': {
       id: '/notifications/'
       path: '/notifications'
       fullPath: '/notifications'
-      preLoaderRoute: typeof NotificationsIndexImport
-      parentRoute: typeof rootRoute
+      preLoaderRoute: typeof protectedNotificationsIndexImport
+      parentRoute: typeof protectedImport
     }
-    '/_more/support/contact': {
-      id: '/_more/support/contact'
-      path: '/support/contact'
-      fullPath: '/support/contact'
-      preLoaderRoute: typeof MoreSupportContactImport
-      parentRoute: typeof rootRoute
-    }
-    '/_more/support/docs': {
-      id: '/_more/support/docs'
-      path: '/support/docs'
-      fullPath: '/support/docs'
-      preLoaderRoute: typeof MoreSupportDocsImport
-      parentRoute: typeof rootRoute
-    }
-    '/_more/support/tutorials': {
-      id: '/_more/support/tutorials'
-      path: '/support/tutorials'
-      fullPath: '/support/tutorials'
-      preLoaderRoute: typeof MoreSupportTutorialsImport
-      parentRoute: typeof rootRoute
+    '/(protected)/settings/': {
+      id: '/settings/'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof protectedSettingsIndexImport
+      parentRoute: typeof protectedImport
     }
   }
 }
@@ -128,14 +168,18 @@ declare module '@tanstack/react-router' {
 // Create and export the route tree
 
 export const routeTree = rootRoute.addChildren({
-  IndexRoute,
-  MoreSettingsRoute,
-  AlarmsIndexRoute,
-  DatabasesIndexRoute,
-  NotificationsIndexRoute,
-  MoreSupportContactRoute,
-  MoreSupportDocsRoute,
-  MoreSupportTutorialsRoute,
+  protectedRoute: protectedRoute.addChildren({
+    protectedIndexRoute,
+    protectedSupportContactRoute,
+    protectedSupportDocsRoute,
+    protectedSupportTutorialsRoute,
+    protectedAlarmsIndexRoute,
+    protectedDatabasesIndexRoute,
+    protectedNotificationsIndexRoute,
+    protectedSettingsIndexRoute,
+  }),
+  authLoginRoute,
+  authRegisterRoute,
 })
 
 /* prettier-ignore-end */
@@ -147,38 +191,47 @@ export const routeTree = rootRoute.addChildren({
       "filePath": "__root.tsx",
       "children": [
         "/",
-        "/_more/settings",
-        "/alarms/",
-        "/databases/",
-        "/notifications/",
-        "/_more/support/contact",
-        "/_more/support/docs",
-        "/_more/support/tutorials"
+        "/login",
+        "/register"
       ]
     },
     "/": {
-      "filePath": "index.tsx"
+      "filePath": "(protected)/index.tsx",
+      "parent": "/"
     },
-    "/_more/settings": {
-      "filePath": "_more/settings.tsx"
+    "/login": {
+      "filePath": "(auth)/login.tsx"
+    },
+    "/register": {
+      "filePath": "(auth)/register.tsx"
+    },
+    "/support/contact": {
+      "filePath": "(protected)/support/contact.tsx",
+      "parent": "/"
+    },
+    "/support/docs": {
+      "filePath": "(protected)/support/docs.tsx",
+      "parent": "/"
+    },
+    "/support/tutorials": {
+      "filePath": "(protected)/support/tutorials.tsx",
+      "parent": "/"
     },
     "/alarms/": {
-      "filePath": "alarms/index.tsx"
+      "filePath": "(protected)/alarms/index.tsx",
+      "parent": "/"
     },
     "/databases/": {
-      "filePath": "databases/index.tsx"
+      "filePath": "(protected)/databases/index.tsx",
+      "parent": "/"
     },
     "/notifications/": {
-      "filePath": "notifications/index.tsx"
+      "filePath": "(protected)/notifications/index.tsx",
+      "parent": "/"
     },
-    "/_more/support/contact": {
-      "filePath": "_more/support/contact.tsx"
-    },
-    "/_more/support/docs": {
-      "filePath": "_more/support/docs.tsx"
-    },
-    "/_more/support/tutorials": {
-      "filePath": "_more/support/tutorials.tsx"
+    "/settings/": {
+      "filePath": "(protected)/settings/index.tsx",
+      "parent": "/"
     }
   }
 }
