@@ -24,6 +24,6 @@ export const errorMiddleware = (
       status: 500,
       error: true,
       name: 'InternalServerError',
-      message: 'Algo salió mal, vuelve a intentarlo más tarde.'
+      message: 'Something went wrong. Try again later.'
     })
 }

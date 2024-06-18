@@ -3,23 +3,26 @@ import { verify } from 'jsonwebtoken'
 import { User } from '@/models'
 import { JWT_SECRET } from '@/config/env'
 import { UnauthorizedError } from '@/errors'
-import { errorHandler } from '@/middlewares'
+import { withErrorHandling } from '@/utils'
 import { type AuthenticatedRequest } from '@/types/global'
 
-export const authenticateToken = errorHandler(async (
+export const authenticateToken = withErrorHandling(async (
   req: AuthenticatedRequest,
   _res,
   next
 ) => {
-  const authHeader = req.headers.authorization
-  const token = authHeader?.split(' ')[1] || ''
-  if (!token) {
-    throw new UnauthorizedError('Invalid credentials')
-  }
+  const accessToken = ((): string | null => {
+    if (!req.cookies?.acces_token && !req.headers.authorization) return null
+    if (req.cookies.acces_token) return req.cookies.acces_token
+    if (req.headers.authorization) return req.headers.authorization?.split(' ')[1] || null
+    return null
+  })()
+
+  if (!accessToken) throw new UnauthorizedError('Invalid credentials')
 
   let verifiedToken: { id: number }
   try {
-    verifiedToken = verify(token, JWT_SECRET) as { id: number }
+    verifiedToken = verify(accessToken, JWT_SECRET) as { id: number }
   } catch {
     throw new UnauthorizedError('Invalid credentials')
   }
