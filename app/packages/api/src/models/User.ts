@@ -1,7 +1,7 @@
 import { Model } from '@/config/knex'
 
 export class User extends Model {
-  static tableName = 'user'
+  static tableName = 'users'
   static idColumn = 'id'
 
   id!: number
