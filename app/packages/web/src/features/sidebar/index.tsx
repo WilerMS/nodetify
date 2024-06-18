@@ -30,7 +30,9 @@ export const SideBar = () => {
       )}
     >
       <div className='h-[75px] w-full flex-col center relative'>
-        <Logo className='pt-[5px]' showTitle={expanded} />
+        <div className='w-full h-full px-6 flex items-center cursor-pointer'>
+          <Logo className='pt-[5px]' showTitle={expanded} />
+        </div>
         <button
           className={cn(
             'w-[25px] h-[25px] absolute right-[-13px] mt-[5px] ',
