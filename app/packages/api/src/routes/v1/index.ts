@@ -2,20 +2,25 @@ import { Router } from 'express'
 import fs from 'fs'
 import path from 'path'
 
-const EXCLUDED = ['index.ts']
+interface FileRoute {
+  router: Router
+  endpoint: string
+}
 
-const processRoutes = (router: Router) => {
+const EXCLUDED = ['index']
+
+const processRoutes = (_router: Router) => {
   try {
     const files = fs.readdirSync(path.join(__dirname), { withFileTypes: true })
     for (const file of files) {
-      if (EXCLUDED.includes(file.name)) continue
+      if (EXCLUDED.some(name => file.name.startsWith(name))) continue
 
-      const routeModule: Router = require(path.join(__dirname, file.name)).default
+      const { router, endpoint }: FileRoute = require(path.join(__dirname, file.name))
+      console.log({ endpoint })
 
-      const url = file.name.split('.')[0]
-      router.use(`/${url}`, routeModule)
+      _router.use(endpoint, router)
     }
-    return router
+    return _router
   } catch (err) {
     console.log({ err })
     throw new Error('\x1b[31mThere was an error when trying to import v1 routes \x1b[0m')

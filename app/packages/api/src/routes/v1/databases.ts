@@ -1,24 +1,25 @@
 import { Router } from 'express'
 import { Database } from '@/models'
 
-import { errorHandler } from '@/middlewares'
+import { withErrorHandling } from '@/utils'
 import { NotFoundError } from '@/errors'
 
-const router = Router()
+export const router = Router()
+export const endpoint = '/databases'
 
-router.get('/', errorHandler(async (_req, res) => {
+router.get('/', withErrorHandling(async (_req, res) => {
   const databases = await Database.query()
   res.json(databases)
 }))
 
-router.get('/:id', errorHandler(async (req, res) => {
+router.get('/:id', withErrorHandling(async (req, res) => {
   const { id } = req.params
   const database = await Database.query().findById(id)
   if (!database) throw new NotFoundError('Database not found')
   return res.json(database)
 }))
 
-router.post('/', errorHandler(async (req, res) => {
+router.post('/', withErrorHandling(async (req, res) => {
   const { name, description, type, connection } = req.body
   const newDatabase = await Database.query().insert({
     name,
@@ -30,7 +31,7 @@ router.post('/', errorHandler(async (req, res) => {
   return res.status(201).json(newDatabase)
 }))
 
-router.patch('/:id', errorHandler(async (req, res) => {
+router.patch('/:id', withErrorHandling(async (req, res) => {
   const { id } = req.params
   const { name, description, type, connection } = req.body
 
@@ -48,7 +49,7 @@ router.patch('/:id', errorHandler(async (req, res) => {
   return res.json(database)
 }))
 
-router.delete('/:id', errorHandler(async (req, res) => {
+router.delete('/:id', withErrorHandling(async (req, res) => {
   const { id } = req.params
   const deleted = await Database.query().deleteById(id)
 
@@ -56,5 +57,3 @@ router.delete('/:id', errorHandler(async (req, res) => {
 
   return res.json({ message: 'Database deleted successfully' })
 }))
-
-export default router

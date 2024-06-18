@@ -1,24 +1,25 @@
 import { Router } from 'express'
 
 import { Severity } from '@/models'
-import { errorHandler } from '@/middlewares'
 import { NotFoundError } from '@/errors'
+import { withErrorHandling } from '@/utils'
 
-const router = Router()
+export const router = Router()
+export const endpoint = '/severities'
 
-router.get('/', errorHandler(async (_req, res) => {
+router.get('/', withErrorHandling(async (_, res) => {
   const severities = await Severity.query()
-  res.json(severities)
+  return res.json(severities)
 }))
 
-router.get('/:id', errorHandler(async (req, res) => {
+router.get('/:id', withErrorHandling(async (req, res) => {
   const { id } = req.params
   const severity = await Severity.query().findById(id)
   if (!severity) throw new NotFoundError('Severity not found')
   return res.json(severity)
 }))
 
-router.post('/', errorHandler(async (req, res) => {
+router.post('/', withErrorHandling(async (req, res) => {
   const { description, level, color } = req.body
   const newSeverity = await Severity.query().insert({
     description,
@@ -29,7 +30,7 @@ router.post('/', errorHandler(async (req, res) => {
   return res.status(201).json(newSeverity)
 }))
 
-router.patch('/:id', errorHandler(async (req, res) => {
+router.patch('/:id', withErrorHandling(async (req, res) => {
   const { id } = req.params
   const { description, level, color } = req.body
   const updated = await Severity.query().findById(id).patch({
@@ -45,7 +46,7 @@ router.patch('/:id', errorHandler(async (req, res) => {
   return res.json(severity)
 }))
 
-router.delete('/:id', errorHandler(async (req, res) => {
+router.delete('/:id', withErrorHandling(async (req, res) => {
   const { id } = req.params
   const deleted = await Severity.query().deleteById(id)
 
@@ -53,5 +54,3 @@ router.delete('/:id', errorHandler(async (req, res) => {
 
   return res.json({ message: 'Severity deleted successfully' })
 }))
-
-export default router
