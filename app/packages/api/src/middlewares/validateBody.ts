@@ -2,12 +2,12 @@ import Ajv from 'ajv'
 import { type JSONSchema } from 'objection'
 
 import { BadRequestError } from '@/errors'
-import { errorHandler } from '@/middlewares'
+import { withErrorHandling } from '@/utils'
 
 const ajv = new Ajv()
 
 export const validateBody = (schema: JSONSchema) => {
-  return errorHandler((req, _, next) => {
+  return withErrorHandling((req, _, next) => {
     const valid = ajv.validate(schema, req.body)
 
     if (!valid) {
