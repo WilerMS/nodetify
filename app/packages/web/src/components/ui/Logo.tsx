@@ -9,13 +9,11 @@ interface LogoProps {
 
 export const Logo: FC<LogoProps> = ({ className, showTitle = true }) => {
   return (
-    <div className={cn('w-full h-full px-6 flex items-center cursor-pointer', className)}>
-      <div className="logo flex gap-2 items-center">
-        <div className='bg-black w-[40px] h-[40px] center rounded-lg'>
-          <IconBell className='text-white -rotate-12' size={30} stroke={1.8}/>
-        </div>
-        {showTitle && <span className='text-2xl transition-all duration-1000 font-bold'>Nodetify</span>}
+    <div className={cn('logo flex gap-2 items-center', className)}>
+      <div className='bg-black w-[40px] h-[40px] center rounded-lg'>
+        <IconBell className='text-white -rotate-12' size={30} stroke={1.8}/>
       </div>
+      {showTitle && <span className='text-2xl transition-all duration-1000 font-bold'>Nodetify</span>}
     </div>
   )
 }
