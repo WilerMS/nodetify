@@ -1,4 +1,4 @@
-CREATE TABLE "user" (
+CREATE TABLE users (
   id SERIAL PRIMARY KEY,
   name TEXT NOT NULL,
   username TEXT NOT NULL,
@@ -7,7 +7,7 @@ CREATE TABLE "user" (
   birth_date TIMESTAMP
 );
 
-INSERT INTO severity (name, username, password) VALUES ('default user', 'root', 'root');
+INSERT INTO users (name, username, password) VALUES ('default user', 'root', 'root');
 
 CREATE TABLE severity (
   id SERIAL PRIMARY KEY,
