@@ -11,10 +11,11 @@
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
+import { Route as AuthImport } from './routes/auth'
 import { Route as protectedImport } from './routes/(protected)'
 import { Route as protectedIndexImport } from './routes/(protected)/index'
-import { Route as authRegisterImport } from './routes/(auth)/register'
-import { Route as authLoginImport } from './routes/(auth)/login'
+import { Route as AuthRegisterImport } from './routes/auth/register'
+import { Route as AuthLoginImport } from './routes/auth/login'
 import { Route as protectedSettingsIndexImport } from './routes/(protected)/settings/index'
 import { Route as protectedNotificationsIndexImport } from './routes/(protected)/notifications/index'
 import { Route as protectedDatabasesIndexImport } from './routes/(protected)/databases/index'
@@ -24,6 +25,11 @@ import { Route as protectedSupportDocsImport } from './routes/(protected)/suppor
 import { Route as protectedSupportContactImport } from './routes/(protected)/support/contact'
 
 // Create/Update Routes
+
+const AuthRoute = AuthImport.update({
+  path: '/auth',
+  getParentRoute: () => rootRoute,
+} as any)
 
 const protectedRoute = protectedImport.update({
   id: '/(protected)',
@@ -35,14 +41,14 @@ const protectedIndexRoute = protectedIndexImport.update({
   getParentRoute: () => protectedRoute,
 } as any)
 
-const authRegisterRoute = authRegisterImport.update({
+const AuthRegisterRoute = AuthRegisterImport.update({
   path: '/register',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => AuthRoute,
 } as any)
 
-const authLoginRoute = authLoginImport.update({
+const AuthLoginRoute = AuthLoginImport.update({
   path: '/login',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => AuthRoute,
 } as any)
 
 const protectedSettingsIndexRoute = protectedSettingsIndexImport.update({
@@ -92,19 +98,26 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof protectedImport
       parentRoute: typeof rootRoute
     }
-    '/(auth)/login': {
-      id: '/login'
-      path: '/login'
-      fullPath: '/login'
-      preLoaderRoute: typeof authLoginImport
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthImport
       parentRoute: typeof rootRoute
     }
-    '/(auth)/register': {
-      id: '/register'
+    '/auth/login': {
+      id: '/auth/login'
+      path: '/login'
+      fullPath: '/auth/login'
+      preLoaderRoute: typeof AuthLoginImport
+      parentRoute: typeof AuthImport
+    }
+    '/auth/register': {
+      id: '/auth/register'
       path: '/register'
-      fullPath: '/register'
-      preLoaderRoute: typeof authRegisterImport
-      parentRoute: typeof rootRoute
+      fullPath: '/auth/register'
+      preLoaderRoute: typeof AuthRegisterImport
+      parentRoute: typeof AuthImport
     }
     '/(protected)/': {
       id: '/'
@@ -178,8 +191,7 @@ export const routeTree = rootRoute.addChildren({
     protectedNotificationsIndexRoute,
     protectedSettingsIndexRoute,
   }),
-  authLoginRoute,
-  authRegisterRoute,
+  AuthRoute: AuthRoute.addChildren({ AuthLoginRoute, AuthRegisterRoute }),
 })
 
 /* prettier-ignore-end */
@@ -191,19 +203,27 @@ export const routeTree = rootRoute.addChildren({
       "filePath": "__root.tsx",
       "children": [
         "/",
-        "/login",
-        "/register"
+        "/auth"
       ]
     },
     "/": {
       "filePath": "(protected)/index.tsx",
       "parent": "/"
     },
-    "/login": {
-      "filePath": "(auth)/login.tsx"
+    "/auth": {
+      "filePath": "auth.tsx",
+      "children": [
+        "/auth/login",
+        "/auth/register"
+      ]
     },
-    "/register": {
-      "filePath": "(auth)/register.tsx"
+    "/auth/login": {
+      "filePath": "auth/login.tsx",
+      "parent": "/auth"
+    },
+    "/auth/register": {
+      "filePath": "auth/register.tsx",
+      "parent": "/auth"
     },
     "/support/contact": {
       "filePath": "(protected)/support/contact.tsx",
