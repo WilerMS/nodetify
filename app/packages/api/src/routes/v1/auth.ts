@@ -4,13 +4,13 @@ import jwt from 'jsonwebtoken'
 
 import { User } from '@/models/User'
 import { JWT_SECRET } from '@/config/env'
-import { withErrorHandling } from '@/utils'
+import { delay, withErrorHandling } from '@/utils'
 import { authenticateToken, validateBody } from '@/middlewares'
-import { ConflictError, UnauthorizedError } from '@/errors'
+import { BadRequestError, ConflictError, UnauthorizedError } from '@/errors'
 import { type AuthenticatedRequest } from '@/types/global'
 
 type LoginBodyType = Pick<User, 'username' | 'password'>
-type RegisterBodyType = Pick<User, 'name' | 'username' | 'password'>
+type RegisterBodyType = Pick<User, 'name' | 'username' | 'password' | 'email'>
 
 export const router = Router()
 export const endpoint = '/auth'
@@ -35,6 +35,8 @@ router.post(
       }
     )
 
+    await delay(2000)
+
     return res
       .cookie('access_token', token, { httpOnly: true, maxAge: 1000 * 60 * 60 * 2 })
       .json({ token, user: user.toResponse() })
@@ -45,12 +47,22 @@ router.post(
   '/register',
   validateBody(User.registerJsonSchema),
   withErrorHandling(async (req, res) => {
-    const { name, username, password } = req.body as RegisterBodyType
+    const { name, username, password, email } = req.body as RegisterBodyType
+
+    if (!/^[a-zA-Z0-9]+$/.test(username)) {
+      throw new BadRequestError('Invalid username.')
+    }
+
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      throw new BadRequestError('Invalid email.')
+    }
 
     const existingUser = await User.query().findOne({ username })
     if (existingUser) {
       throw new ConflictError('Provided username is not available')
     }
+
+    await delay(2000)
 
     const hashedPassword = await bcrypt.hash(password, 10)
     const newUser = await User
