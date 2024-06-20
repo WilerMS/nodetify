@@ -7,6 +7,7 @@ export class User extends Model {
   id!: number
   name!: string
   username!: string
+  email!: string
   password!: string
   image?: string
   birth_date?: string
@@ -36,11 +37,12 @@ export class User extends Model {
 
   static registerJsonSchema = {
     type: 'object',
-    required: ['name', 'username', 'password'],
+    required: ['name', 'username', 'password', 'email'],
     additionalProperties: false,
     properties: {
       name: { type: 'string' },
       username: { type: 'string' },
+      email: { type: 'string' },
       image: { type: 'string' },
       gender: { type: 'string' },
       birth_date: { type: 'string' },
