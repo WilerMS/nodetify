@@ -1,5 +1,6 @@
 import cn from 'classnames'
 import { useState } from 'react'
+import { useRouter } from '@tanstack/react-router'
 import {
   IconDatabase,
   IconAlarm,
@@ -12,12 +13,25 @@ import {
   IconChevronRight
 } from '@tabler/icons-react'
 
+import { useAuth } from '@/hooks'
+import { Route } from '@/routes/(protected)'
 import { Logo, NavDropdownItem, NavItem, NavLink } from '@/components/ui'
 
 export const SideBar = () => {
   const [expanded, setExpanded] = useState(true)
+  const router = useRouter()
+  const navigate = Route.useNavigate()
+
+  const { logout } = useAuth()
 
   const handleToggleExpanded = () => setExpanded(prev => !prev)
+  const handleLogout = () => {
+    logout().then(() => {
+      router.invalidate().finally(() => {
+        navigate({ to: '/' })
+      })
+    })
+  }
 
   return (
     <aside
@@ -38,7 +52,6 @@ export const SideBar = () => {
             'w-[25px] h-[25px] absolute right-[-13px] mt-[5px] ',
             'hidden shadow border center rounded-full bg-gray-100 transition-all',
             'group-hover:block active:scale-95 duration-100'
-
           )}
           onClick={handleToggleExpanded}
         >
@@ -99,10 +112,12 @@ export const SideBar = () => {
           icon={<IconSettings size={30} />}
         />
 
-        <NavItem className='hover:bg-red-100 text-red-600 cursor-pointer'>
-          <IconLogout2 className='-ml-[3px]' size={30} />
-          {expanded && <span className='truncate'>Log out</span>}
-        </NavItem>
+        <button onClick={handleLogout}>
+          <NavItem className='hover:bg-red-100 text-red-600 cursor-pointer'>
+            <IconLogout2 className='-ml-[3px]' size={30} />
+            {expanded && <span className='truncate'>Log out</span>}
+          </NavItem>
+        </button>
 
       </nav>
     </aside>
