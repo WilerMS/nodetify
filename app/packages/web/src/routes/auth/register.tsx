@@ -1,16 +1,25 @@
 import { type FC } from 'react'
 import { Button } from '@nextui-org/react'
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, useRouter } from '@tanstack/react-router'
 
-import { InputPassword, InputText } from '@/components/ui'
+import { Alert, InputPassword, InputText } from '@/components/ui'
 import { IconGoogle, IconFacebook } from '@/components/icons'
+import { type IRegisterBody, useAuth } from '@/hooks'
 
 const Register: FC = () => {
-  const handleSubmitForm = (e: React.FormEvent<HTMLFormElement>) => {
+  const router = useRouter()
+  const navigate = Route.useNavigate()
+  const { register, isLoading, error } = useAuth()
+
+  const handleSubmitForm = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     const formData = new FormData(e.currentTarget)
-    const data = Object.fromEntries(formData.entries())
-    console.log({ data })
+    const data = Object.fromEntries(formData.entries()) as unknown as IRegisterBody
+
+    // TODO: say welcome to the user
+    await register(data)
+    await router.invalidate()
+    await navigate({ to: '/auth/login', search: { redirect: '/' } })
   }
 
   return (
@@ -35,7 +44,12 @@ const Register: FC = () => {
           label='Username'
           name='username'
           required
-          placeholder='john_doe@example.com'
+          className='[&>div]:border-gray-300'
+        />
+        <InputText
+          label='Name'
+          name='name'
+          required
           className='[&>div]:border-gray-300'
         />
         <InputText
@@ -51,17 +65,19 @@ const Register: FC = () => {
           required
           className='[&>div]:border-gray-300'
         />
-        <InputPassword
-          name='repeat-password'
-          label='Repeat password'
-          required
-          className='[&>div]:border-gray-300'
-        />
+        {error?.error &&
+          <Alert
+            variant='danger'
+            title='Error'
+            description={error.message}
+          />
+        }
         <Button
           className='w-full h-[45px] mt-2 bg-gray-700 border-gray-800 text-white'
           color="default"
           variant="bordered"
           type='submit'
+          isLoading={isLoading}
         >
           Sign up
         </Button>

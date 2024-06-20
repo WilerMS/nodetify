@@ -1,16 +1,36 @@
-import { type FC } from 'react'
 import { Button } from '@nextui-org/react'
-import { Link, createFileRoute } from '@tanstack/react-router'
+import { Link, createFileRoute, useRouter } from '@tanstack/react-router'
 
-import { InputPassword, InputText } from '@/components/ui'
+import { Alert, InputPassword, InputText } from '@/components/ui'
 import { IconGoogle, IconGithub } from '@/components/icons'
+import { type ILoginBody, useAuth } from '@/hooks'
 
-const Login: FC = () => {
-  const handleSubmitForm = (e: React.FormEvent<HTMLFormElement>) => {
+interface ILoginSearch {
+  redirect: string
+}
+
+export const Route = createFileRoute('/auth/login')({
+  validateSearch: (search: Record<string, string>): ILoginSearch => ({
+    redirect: search.redirect
+  }),
+  component: () => <Login />
+})
+
+function Login () {
+  const router = useRouter()
+  const navigate = Route.useNavigate()
+  const search = Route.useSearch()
+  const { login, isLoading, error } = useAuth()
+
+  const handleSubmitForm = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     const formData = new FormData(e.currentTarget)
-    const data = Object.fromEntries(formData.entries())
-    console.log({ data })
+    const data = Object.fromEntries(formData.entries()) as ILoginBody
+    login(data)
+      .then(async () => {
+        await router.invalidate()
+        await navigate({ to: search.redirect ?? '/' })
+      })
   }
 
   return (
@@ -36,11 +56,19 @@ const Login: FC = () => {
         <div className="w-full flex justify-end items-center">
           <span className='cursor-pointer font-bold'>Forgot your password?</span>
         </div>
+        {error?.error &&
+          <Alert
+            variant='danger'
+            title='Error'
+            description={error.message}
+          />
+        }
         <Button
           className='w-full h-[45px] bg-gray-700 border-gray-800 text-white'
           color="default"
           variant="bordered"
           type='submit'
+          isLoading={isLoading}
         >
           Log in
         </Button>
@@ -49,12 +77,8 @@ const Login: FC = () => {
         <span>
           Dont&apos;t have an account?
         </span>
-        <Link to='/auth/register' className='font-bold'>Sign up!</Link>
+        {!isLoading && <Link to='/auth/register' className='font-bold'>Sign up!</Link>}
       </div>
     </div>
   )
 }
-
-export const Route = createFileRoute('/auth/login')({
-  component: () => <Login />
-})
