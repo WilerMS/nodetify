@@ -8,9 +8,10 @@ export class Database extends Model {
   id!: number
   name!: string
   description?: string
+  user_id!: number
   type!: 'PostgreSQL' | 'MySQL' | 'MariaDB' | 'SQLite' | 'SQLServer' | 'Oracle'
-  status!: 'active' | 'inactive' | 'connecting' | 'error'
   connection!: DatabaseConnection
+  status!: 'active' | 'inactive' | 'connecting' | 'error'
   last_checked_at!: string
   created_at!: string
   updated_at!: string
@@ -18,9 +19,10 @@ export class Database extends Model {
   static get jsonSchema () {
     return {
       type: 'object',
-      required: ['name', 'type', 'connection'],
+      required: ['name', 'type', 'connection', 'user_id'],
       properties: {
         id: { type: 'integer' },
+        user_id: { type: 'integer' },
         name: { type: 'string', maxLength: 255 },
         description: { type: 'string' },
         type: { type: 'string', enum: ['PostgreSQL', 'MySQL', 'MariaDB', 'SQLite', 'SQLServer', 'Oracle'] },
