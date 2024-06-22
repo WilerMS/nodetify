@@ -59,7 +59,12 @@ router.post(
 
     const existingUser = await User.query().findOne({ username })
     if (existingUser) {
-      throw new ConflictError('Provided username is not available')
+      throw new ConflictError('Provided username is not available.')
+    }
+
+    const existingEmail = await User.query().findOne({ email })
+    if (existingEmail) {
+      throw new ConflictError('Provided email is being used by another user.')
     }
 
     await delay(2000)
@@ -67,7 +72,7 @@ router.post(
     const hashedPassword = await bcrypt.hash(password, 10)
     const newUser = await User
       .query()
-      .insert({ name, username, password: hashedPassword })
+      .insert({ name, username, email, password: hashedPassword })
 
     return res.json({
       message: 'User successfully created',
