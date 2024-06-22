@@ -2,24 +2,25 @@ import { type FC } from 'react'
 import { Button } from '@nextui-org/react'
 import { createFileRoute, useRouter } from '@tanstack/react-router'
 
-import { Alert, InputPassword, InputText } from '@/components/ui'
-import { IconGoogle, IconFacebook } from '@/components/icons'
 import { type IRegisterBody, useAuth } from '@/hooks'
+import { Alert, InputPassword, InputText } from '@/components/ui'
+import { IconGoogle, IconGithub } from '@/components/icons'
 
 const Register: FC = () => {
-  const router = useRouter()
-  const navigate = Route.useNavigate()
   const { register, isLoading, error } = useAuth()
+  const navigate = Route.useNavigate()
+  const router = useRouter()
 
   const handleSubmitForm = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     const formData = new FormData(e.currentTarget)
     const data = Object.fromEntries(formData.entries()) as unknown as IRegisterBody
-
-    // TODO: say welcome to the user
     await register(data)
-    await router.invalidate()
-    await navigate({ to: '/auth/login', search: { redirect: '/' } })
+      .then(async () => {
+        await router.invalidate()
+        await navigate({ to: '/auth/welcome', search: { registration: 'success' } })
+      })
+      .catch()
   }
 
   return (
@@ -34,8 +35,8 @@ const Register: FC = () => {
           <span className='font-bold'>Google</span>
         </Button>
         <Button className='w-full h-[45px]' color="default" variant="faded">
-          <IconFacebook width={18} height={18} className='flex-shrink-0' />
-          <span className='font-bold'>Facebook</span>
+          <IconGithub width={18} height={18} className='flex-shrink-0' />
+          <span className='font-bold'>Github</span>
         </Button>
       </div>
       <p className='text-center text-sm mt-6 text-gray-600'>or continue with your data</p>
