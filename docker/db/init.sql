@@ -1,12 +1,15 @@
 CREATE TABLE users (
   id SERIAL PRIMARY KEY,
   name TEXT NOT NULL,
-  email TEXT NOT NULL,
-  username TEXT NOT NULL,
+  email TEXT NOT NULL UNIQUE,
+  username TEXT NOT NULL UNIQUE,
   password TEXT NOT NULL,
   image TEXT,
   birth_date TIMESTAMP
 );
+
+CREATE UNIQUE INDEX users_email_uq ON users (email);
+CREATE UNIQUE INDEX users_username_uq ON users (username);
 
 INSERT INTO users (name, username, password) VALUES ('default user', 'root', 'root');
 
