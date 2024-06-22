@@ -5,12 +5,18 @@ import { useEffect, useState } from 'react'
 
 const AuthLayout = () => {
   const router = useRouterState()
-  const [showBack, setShowBack] = useState(() => {
-    return router.location.pathname.includes('register')
-  })
+  const [showBack, setShowBack] = useState(false)
+  const [showLogo, setShowLogo] = useState(true)
 
   useEffect(() => {
-    setShowBack(router.location.pathname.includes('register'))
+    setShowBack(
+      router.location.pathname.includes('register') ||
+      !router.location.pathname.includes('welcomne')
+    )
+
+    setShowLogo(
+      !router.location.pathname.includes('welcome')
+    )
   }, [router.location.pathname])
 
   return (
@@ -20,16 +26,14 @@ const AuthLayout = () => {
           <div className="w-full flex gap-3 flex-shrink-0">
             {showBack && (
               <Link
-                search={{
-                  redirect: '/'
-                }}
+                search={{ redirect: '/' }}
                 to='/auth/login'
                 className="rounded-full p-2 border-2 border-gray-500"
               >
                 <IconArrowLeft size={20} />
               </Link>
             )}
-            <Logo className='h-[max-content]' />
+            {showLogo && <Logo className='h-[max-content]' />}
           </div>
           <div className="w-full h-full center">
             <Outlet />
