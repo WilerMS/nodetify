@@ -14,6 +14,7 @@ import { Route as rootRoute } from './routes/__root'
 import { Route as AuthImport } from './routes/auth'
 import { Route as protectedImport } from './routes/(protected)'
 import { Route as protectedIndexImport } from './routes/(protected)/index'
+import { Route as AuthWelcomeImport } from './routes/auth/welcome'
 import { Route as AuthRegisterImport } from './routes/auth/register'
 import { Route as AuthLoginImport } from './routes/auth/login'
 import { Route as protectedSettingsIndexImport } from './routes/(protected)/settings/index'
@@ -39,6 +40,11 @@ const protectedRoute = protectedImport.update({
 const protectedIndexRoute = protectedIndexImport.update({
   path: '/',
   getParentRoute: () => protectedRoute,
+} as any)
+
+const AuthWelcomeRoute = AuthWelcomeImport.update({
+  path: '/welcome',
+  getParentRoute: () => AuthRoute,
 } as any)
 
 const AuthRegisterRoute = AuthRegisterImport.update({
@@ -119,6 +125,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthRegisterImport
       parentRoute: typeof AuthImport
     }
+    '/auth/welcome': {
+      id: '/auth/welcome'
+      path: '/welcome'
+      fullPath: '/auth/welcome'
+      preLoaderRoute: typeof AuthWelcomeImport
+      parentRoute: typeof AuthImport
+    }
     '/(protected)/': {
       id: '/'
       path: '/'
@@ -191,7 +204,11 @@ export const routeTree = rootRoute.addChildren({
     protectedNotificationsIndexRoute,
     protectedSettingsIndexRoute,
   }),
-  AuthRoute: AuthRoute.addChildren({ AuthLoginRoute, AuthRegisterRoute }),
+  AuthRoute: AuthRoute.addChildren({
+    AuthLoginRoute,
+    AuthRegisterRoute,
+    AuthWelcomeRoute,
+  }),
 })
 
 /* prettier-ignore-end */
@@ -214,7 +231,8 @@ export const routeTree = rootRoute.addChildren({
       "filePath": "auth.tsx",
       "children": [
         "/auth/login",
-        "/auth/register"
+        "/auth/register",
+        "/auth/welcome"
       ]
     },
     "/auth/login": {
@@ -223,6 +241,10 @@ export const routeTree = rootRoute.addChildren({
     },
     "/auth/register": {
       "filePath": "auth/register.tsx",
+      "parent": "/auth"
+    },
+    "/auth/welcome": {
+      "filePath": "auth/welcome.tsx",
       "parent": "/auth"
     },
     "/support/contact": {
