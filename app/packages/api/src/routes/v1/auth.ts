@@ -7,7 +7,7 @@ import { JWT_SECRET } from '@/config/env'
 import { delay, withErrorHandling } from '@/utils'
 import { authenticateToken, validateBody } from '@/middlewares'
 import { BadRequestError, ConflictError, UnauthorizedError } from '@/errors'
-import { type AuthenticatedRequest } from '@/types/global'
+import { type AuthRequest } from '@/types/global'
 
 type LoginBodyType = Pick<User, 'username' | 'password'>
 type RegisterBodyType = Pick<User, 'name' | 'username' | 'password' | 'email'>
@@ -85,7 +85,7 @@ router.patch(
   '/users/:id(\\d+)',
   authenticateToken,
   validateBody(User.jsonSchema),
-  withErrorHandling(async (req: AuthenticatedRequest, res) => {
+  withErrorHandling(async (req: AuthRequest, res) => {
     const { name, username, password, birth_date, image } = req.body as User
     const { id } = req.params
 
@@ -116,7 +116,7 @@ router.patch(
 router.get(
   '/users/:id(\\d+)',
   authenticateToken,
-  withErrorHandling(async (req: AuthenticatedRequest, res) => {
+  withErrorHandling(async (req: AuthRequest, res) => {
     const { id } = req.params
 
     if (req.auth?.user.id !== Number(id)) {
