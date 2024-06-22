@@ -9,7 +9,7 @@ export interface DatabaseConnection {
   password: string
 }
 
-export interface AuthenticatedRequest extends Request {
+export interface AuthRequest extends Request {
   auth?: {
     user: User
   }
