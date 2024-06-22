@@ -29,6 +29,7 @@ INSERT INTO severity (description, level, color) VALUES
 
 CREATE TABLE database (
   id SERIAL PRIMARY KEY,
+  user_id INTEGER NOT NULL,
   name TEXT NOT NULL,
   description TEXT,
   type TEXT CHECK (type IN ('PostgreSQL', 'MySQL', 'MariaDB', 'SQLite', 'SQLServer', 'Oracle')),
@@ -36,7 +37,8 @@ CREATE TABLE database (
   connection JSON NOT NULL,
   last_checked_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT fk_database_users FOREIGN KEY (user_id) REFERENCES users(id)
 );
 
 CREATE TABLE alarm (
