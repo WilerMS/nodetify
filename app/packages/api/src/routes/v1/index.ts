@@ -14,10 +14,7 @@ const processRoutes = (_router: Router) => {
     const files = fs.readdirSync(path.join(__dirname), { withFileTypes: true })
     for (const file of files) {
       if (EXCLUDED.some(name => file.name.startsWith(name))) continue
-
       const { router, endpoint }: FileRoute = require(path.join(__dirname, file.name))
-      console.log({ endpoint })
-
       _router.use(endpoint, router)
     }
     return _router
