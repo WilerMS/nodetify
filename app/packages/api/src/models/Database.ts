@@ -19,7 +19,7 @@ export class Database extends Model {
   static get jsonSchema () {
     return {
       type: 'object',
-      required: ['name', 'type', 'connection', 'user_id'],
+      required: ['name', 'type', 'connection'],
       properties: {
         id: { type: 'integer' },
         user_id: { type: 'integer' },
@@ -37,8 +37,8 @@ export class Database extends Model {
           },
           required: ['host', 'port', 'database', 'user', 'password']
         },
-        created_at: { type: 'string', format: 'date-time' },
-        updated_at: { type: 'string', format: 'date-time' }
+        created_at: { type: 'string' },
+        updated_at: { type: 'string' }
       }
     }
   }
