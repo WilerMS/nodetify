@@ -3,7 +3,7 @@ import { Router } from 'express'
 import { Database } from '@/models'
 import { withErrorHandling } from '@/utils'
 import { NotFoundError } from '@/errors'
-import { authenticateToken } from '@/middlewares'
+import { authenticateToken, validateBody } from '@/middlewares'
 import { type AuthRequest } from '@/types/global'
 
 export const router = Router()
@@ -44,6 +44,7 @@ router.get(
 router.post(
   '/',
   authenticateToken,
+  validateBody(Database.jsonSchema),
   withErrorHandling(async (req: AuthRequest, res) => {
     const { name, description, type, connection } = req.body
     const newDatabase = await Database
@@ -63,6 +64,7 @@ router.post(
 router.patch(
   '/:id',
   authenticateToken,
+  validateBody(Database.jsonSchema),
   withErrorHandling(async (req: AuthRequest, res) => {
     const { id } = req.params
     const { name, description, type, connection } = req.body
