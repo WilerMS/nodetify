@@ -1,6 +1,6 @@
 import { type Request, type Response, type NextFunction } from 'express'
 import { ApiError } from '@/errors'
-import { UniqueViolationError } from 'objection'
+import { UniqueViolationError, ValidationError } from 'objection'
 
 // @ts-expect-error: typescript version maybe does not suppor ListFormat
 const formatter = new Intl.ListFormat('en', { style: 'long', type: 'conjunction' })
@@ -11,6 +11,7 @@ export const errorMiddleware = (
   res: Response,
   next: NextFunction
 ) => {
+  console.log(err)
   if (err instanceof ApiError) {
     return res
       .status(err.status)
@@ -35,6 +36,19 @@ export const errorMiddleware = (
         error: true,
         name: 'BadRequestError',
         message: errorMsg
+      })
+  }
+
+  if (err instanceof ValidationError) {
+    const { message } = err
+
+    return res
+      .status(400)
+      .json({
+        status: 400,
+        error: true,
+        name: 'BadRequestError',
+        message
       })
   }
 
