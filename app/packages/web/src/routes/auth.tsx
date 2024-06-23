@@ -1,7 +1,8 @@
-import { Logo } from '@/components/ui'
+import { useEffect, useState } from 'react'
 import { IconArrowLeft } from '@tabler/icons-react'
 import { Link, Outlet, createFileRoute, redirect, useRouterState } from '@tanstack/react-router'
-import { useEffect, useState } from 'react'
+
+import { Logo } from '@/components/ui'
 
 const AuthLayout = () => {
   const router = useRouterState()
@@ -9,13 +10,14 @@ const AuthLayout = () => {
   const [showLogo, setShowLogo] = useState(true)
 
   useEffect(() => {
+    const path = router.location.pathname
     setShowBack(
-      router.location.pathname.includes('register') ||
-      !router.location.pathname.includes('welcomne')
+      path.includes('register') ||
+      (!path.includes('welcomne') && !path.includes('login'))
     )
 
     setShowLogo(
-      !router.location.pathname.includes('welcome')
+      !path.includes('welcome')
     )
   }, [router.location.pathname])
 
