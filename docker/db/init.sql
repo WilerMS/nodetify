@@ -11,8 +11,6 @@ CREATE TABLE users (
 CREATE UNIQUE INDEX users_email_uq ON users (email);
 CREATE UNIQUE INDEX users_username_uq ON users (username);
 
-INSERT INTO users (name, username, password) VALUES ('default user', 'root', 'root');
-
 CREATE TABLE severity (
   id SERIAL PRIMARY KEY,
   description TEXT NOT NULL,
@@ -32,7 +30,7 @@ CREATE TABLE database (
   user_id INTEGER NOT NULL,
   name TEXT NOT NULL,
   description TEXT,
-  type TEXT CHECK (type IN ('PostgreSQL', 'MySQL', 'MariaDB', 'SQLite', 'SQLServer', 'Oracle')),
+  type TEXT CHECK (type IN ('PostgreSQL', 'MySQL')),
   status TEXT CHECK (status IN ('active', 'inactive', 'connecting', 'error')) DEFAULT 'connecting',
   connection JSON NOT NULL,
   last_checked_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
