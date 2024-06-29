@@ -25,7 +25,7 @@ export class Database extends Model {
         user_id: { type: 'integer' },
         name: { type: 'string', maxLength: 255 },
         description: { type: 'string' },
-        type: { type: 'string', enum: ['PostgreSQL', 'MySQL', 'MariaDB', 'SQLite', 'SQLServer', 'Oracle'] },
+        type: { type: 'string', enum: ['PostgreSQL'] },
         connection: {
           type: 'object',
           properties: {
