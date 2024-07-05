@@ -32,10 +32,7 @@ export class PgConnector extends DBConnector {
 
       // Caching errors to reconnect automatically
       this.client.on('error', error => {
-        this.emit('logger.error', `Failed to connect to PostgreSQL database ${this.config.database} at ${this.config.host}: ${error.message}`)
-        this.emit('client.error', this)
-        // start reconnection in 1 minute
-        setTimeout(this.reconnect.bind(this), 60000)
+        throw new Error(error.message)
       })
 
       this.emit('client.connected', this)
@@ -47,7 +44,7 @@ export class PgConnector extends DBConnector {
       this.emit('logger.error', `Failed to connect to PostgreSQL database ${this.config.database} at ${this.config.host}: ${error as string}`)
       this.emit('client.error', this)
       // start reconnection in 1 minute
-      setTimeout(this.reconnect.bind(this), 20000)
+      setTimeout(this.reconnect.bind(this), 60000)
     }
   }
 
