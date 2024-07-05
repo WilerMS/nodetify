@@ -1,41 +1,41 @@
 import { logger } from '@/utils'
 import { Database } from '@/models'
-import { PgConnector } from './connectors/PgConnector'
 import { ConnectionHandler } from './handlers/ConnectionHandler'
 import { type DbClientNotification, type DBConnector } from './connectors/DBConnector'
+import { createDatabaseConnection } from './connectors'
 
 interface EventHandlers {
-  handleNotification: (notification: DbClientNotification) => void
-  handleClientConnected: (connection: DBConnector) => void
-  handleClientError: (connection: DBConnector) => void
+  onClientNotification: (notification: DbClientNotification) => void
+  onClientConnected: (connection: DBConnector) => void
+  onClientError: (connection: DBConnector) => void
 }
 
 interface StartDbServiceOptions {
-  eventHandlers?: EventHandlers
+  events?: EventHandlers
 }
 
 export const connectionHandler = new ConnectionHandler()
 
-export const startDbService = async ({ eventHandlers }: StartDbServiceOptions) => {
+export const startDbService = async ({ events }: StartDbServiceOptions) => {
   const databases = await Database.query()
 
   for (const database of databases) {
-    const connection = new PgConnector(database.id, database.connection)
+    const connection = createDatabaseConnection(database)
 
-    connection.on('logger.info', logger.info)
-    connection.on('logger.error', logger.error)
-    connection.on('logger.warn', logger.warn)
+    connection.on('logger.info', info => logger.info(info))
+    connection.on('logger.error', info => logger.error(info))
+    connection.on('logger.warn', info => logger.warn(info))
 
     connection.on('client.connected', (connection) => {
-      eventHandlers?.handleClientConnected?.(connection)
+      events?.onClientConnected?.(connection)
     })
 
     connection.on('client.error', (connection) => {
-      eventHandlers?.handleClientConnected?.(connection)
+      events?.onClientError?.(connection)
     })
 
     connection.on('client.notification', (data) => {
-      eventHandlers?.handleNotification?.(data)
+      events?.onClientNotification?.(data)
     })
 
     // Add connection to the storage
