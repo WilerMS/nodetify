@@ -1,7 +1,7 @@
 import { EventEmitter } from 'stream'
 import { type DatabaseConnection } from '@/types/global'
 
-interface Notification {
+export interface DbClientNotification {
   table: string
   type: string
   data: Record<string, any>
@@ -10,7 +10,7 @@ interface Notification {
 export declare interface DBConnector {
   on:
   ((event: 'logger.info' | 'logger.error' | 'logger.warn', listener: (text: string) => void) => this) &
-  ((event: 'client.notification', listener: (notification: Notification) => void) => this) &
+  ((event: 'client.notification', listener: (notification: DbClientNotification) => void) => this) &
   ((event: 'client.connected', listener: (obj: this) => void) => this) &
   ((event: 'client.error', listener: (obj: this) => void) => this)
 }
