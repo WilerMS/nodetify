@@ -35,6 +35,7 @@ export class PgConnector extends DBConnector {
         throw new Error(error.message)
       })
 
+      this.connected = true
       this.emit('client.connected', this)
       this.emit('logger.info', `Connected to PostgreSQL database ${this.config.database} at ${this.config.host}`)
 
@@ -50,12 +51,14 @@ export class PgConnector extends DBConnector {
 
   async reconnect (): Promise<void> {
     this.emit('logger.info', `Restarting connection to PostgreSQL database ${this.config.database} at ${this.config.host}`)
+    this.connected = false
     this.client.end()
     await this.connect()
   }
 
   async disconnect (): Promise<void> {
     this.emit('logger.info', `Disconnected to PostgreSQL database ${this.config.database} at ${this.config.host}`)
+    this.connected = false
     this.client.end()
   }
 
@@ -63,8 +66,10 @@ export class PgConnector extends DBConnector {
     try {
       await this.client.query('SELECT 1')
       this.emit('logger.info', `PostgreSQL connection for database ${this.config.database} at ${this.config.host} is active.`)
+      this.emit('client.checkConnection.success')
     } catch (error) {
       this.emit('logger.error', `Connection lost for database ${this.config.database} at ${this.config.host}, reconnecting...`)
+      this.emit('client.checkConnection.error')
       await this.reconnect()
     }
   }

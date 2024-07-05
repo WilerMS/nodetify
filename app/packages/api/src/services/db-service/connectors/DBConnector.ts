@@ -18,6 +18,7 @@ export declare interface DBConnector {
 export abstract class DBConnector extends EventEmitter {
   id!: number
   config!: DatabaseConnection
+  connected: boolean = false
 
   constructor (id: number, config: DatabaseConnection) {
     super()
