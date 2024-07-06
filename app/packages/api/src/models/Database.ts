@@ -1,5 +1,7 @@
+import { DATABASE_SECRET_KEY } from '@/config/env'
 import { Model } from '@/config/knex'
 import { type DatabaseConnection } from '@/types/global'
+import { encrypt, decrypt, type EncryptedText } from '@/utils'
 
 export class Database extends Model {
   static tableName = 'database'
@@ -16,6 +18,29 @@ export class Database extends Model {
   last_checked_at!: string
   created_at!: string
   updated_at!: string
+
+  async $beforeUpsert () {
+    if (this.connection) {
+      const connetion: string = typeof this.connection === 'string' ? this.connection : JSON.stringify(this.connection)
+      // @ts-expect-error: convert connection to string to save the hash in db
+      this.connection = encrypt(DATABASE_SECRET_KEY, connetion)
+    }
+  }
+
+  async $beforeInsert () {
+    await this.$beforeUpsert()
+  }
+
+  async $beforeUpdate () {
+    await this.$beforeUpsert()
+  }
+
+  $afterFind () {
+    if (typeof this.connection === 'string') {
+      const connection = decrypt(DATABASE_SECRET_KEY, this.connection as EncryptedText)
+      this.connection = JSON.parse(connection)
+    }
+  }
 
   static get jsonSchema () {
     return {
