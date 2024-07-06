@@ -11,3 +11,4 @@ export const DB_HOST = process.env.DB_HOST!
 export const JWT_SECRET = process.env.JWT_SECRET!
 export const DEVELOPMENT = process.env.NODE_ENV === 'development'
 export const PRODUCTION = process.env.NODE_ENV === 'production'
+export const DATABASE_SECRET_KEY = process.env.DATABASE_SECRET_KEY!
