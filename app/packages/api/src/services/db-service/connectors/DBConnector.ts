@@ -1,5 +1,6 @@
 import { EventEmitter } from 'stream'
 import { type DatabaseConnection } from '@/types/global'
+import { type Schema } from '../types'
 
 export interface DbClientNotification {
   table: string
@@ -7,13 +8,13 @@ export interface DbClientNotification {
   data: Record<string, any>
 }
 
+type ClientEventNames = 'client.connected' | 'client.error' | 'client.checkConnection.error' | 'client.checkConnection.success'
+type LoggerEventNames = 'logger.info' | 'logger.error' | 'logger.warn'
+
 type DbConnectorEvent<T> =
-  ((event: 'logger.info' | 'logger.error' | 'logger.warn', listener: (text: string) => void) => T) &
+  ((event: LoggerEventNames, listener: (text: string) => void) => T) &
   ((event: 'client.notification', listener: (notification: DbClientNotification) => void) => T) &
-  ((event: 'client.connected' | 'client.error' | 'client.checkConnection.error' | 'client.checkConnection.success', listener: (obj: T) => void) => T) /* &
-  ((event: 'client.error', listener: (obj: T) => void) => T) &
-  ((event: 'client.checkConnection.error', listener: (obj: T) => void) => T) &
-  ((event: 'client.checkConnection.success', listener: (obj: T) => void) => T) */
+  ((event: ClientEventNames, listener: (obj: T) => void) => T)
 
 export declare interface DBConnector {
   on: DbConnectorEvent<this>
@@ -44,5 +45,9 @@ export abstract class DBConnector extends EventEmitter {
 
   async checkConnection (): Promise<void> {
     throw new Error("Method 'checkConnection()' must be implemented.")
+  }
+
+  async getSchema (): Promise<Schema[]> {
+    throw new Error("Method 'getSchema()' must be implemented.")
   }
 }
