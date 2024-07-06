@@ -1,6 +1,6 @@
 import { EventEmitter } from 'stream'
 import { type DatabaseConnection } from '@/types/global'
-import { type Schema } from '../types'
+import { type Schema } from '../utils/types'
 
 export interface DbClientNotification {
   table: string
