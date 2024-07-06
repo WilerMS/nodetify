@@ -32,7 +32,7 @@ CREATE TABLE database (
   description TEXT,
   type TEXT CHECK (type IN ('PostgreSQL', 'MySQL')),
   status TEXT CHECK (status IN ('active', 'inactive', 'connecting', 'error')) DEFAULT 'connecting',
-  connection JSON NOT NULL,
+  connection TEXT NOT NULL,
   schema JSON,
   last_checked_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
