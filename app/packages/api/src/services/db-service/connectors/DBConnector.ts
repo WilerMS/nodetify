@@ -7,12 +7,16 @@ export interface DbClientNotification {
   data: Record<string, any>
 }
 
+type DbConnectorEvent<T> =
+  ((event: 'logger.info' | 'logger.error' | 'logger.warn', listener: (text: string) => void) => T) &
+  ((event: 'client.notification', listener: (notification: DbClientNotification) => void) => T) &
+  ((event: 'client.connected' | 'client.error' | 'client.checkConnection.error' | 'client.checkConnection.success', listener: (obj: T) => void) => T) /* &
+  ((event: 'client.error', listener: (obj: T) => void) => T) &
+  ((event: 'client.checkConnection.error', listener: (obj: T) => void) => T) &
+  ((event: 'client.checkConnection.success', listener: (obj: T) => void) => T) */
+
 export declare interface DBConnector {
-  on:
-  ((event: 'logger.info' | 'logger.error' | 'logger.warn', listener: (text: string) => void) => this) &
-  ((event: 'client.notification', listener: (notification: DbClientNotification) => void) => this) &
-  ((event: 'client.connected', listener: (obj: this) => void) => this) &
-  ((event: 'client.error', listener: (obj: this) => void) => this)
+  on: DbConnectorEvent<this>
 }
 
 export abstract class DBConnector extends EventEmitter {
