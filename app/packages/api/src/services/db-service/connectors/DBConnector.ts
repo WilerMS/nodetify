@@ -8,7 +8,7 @@ export interface DbClientNotification {
   data: Record<string, any>
 }
 
-type ClientEventNames = 'client.connected' | 'client.error' | 'client.checkConnection.error' | 'client.checkConnection.success'
+type ClientEventNames = 'client.connected' | 'client.error' | 'client.checkConnection.error' | 'client.checkConnection.success' | 'client.connecting'
 type LoggerEventNames = 'logger.info' | 'logger.error' | 'logger.warn'
 
 type DbConnectorEvent<T> =
@@ -24,6 +24,7 @@ export abstract class DBConnector extends EventEmitter {
   id!: number
   config!: DatabaseConnection
   connected: boolean = false
+  checkConnectionInterval: NodeJS.Timeout | null = null
 
   constructor (id: number, config: DatabaseConnection) {
     super()
