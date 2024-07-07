@@ -1,18 +1,22 @@
 import { type DBConnector } from '../connectors/DBConnector'
 
 export class ConnectionHandler {
-  connections!: Record<number, DBConnector>
+  private connections!: Record<number, DBConnector>
 
   constructor () {
     this.connections = {}
   }
 
-  addConnection (id: number, dbConnector: DBConnector) {
-    this.connections[id] = dbConnector
+  getAllConnections () {
+    return Object.values(this.connections)
   }
 
   getConnection (id: number) {
     return this.connections[id]
+  }
+
+  addConnection (id: number, dbConnector: DBConnector) {
+    this.connections[id] = dbConnector
   }
 
   removeConnection (id: number) {
