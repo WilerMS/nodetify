@@ -3,7 +3,7 @@ import { createLogger, format, transports } from 'winston'
 const { combine, timestamp, printf, colorize, errors } = format
 
 const customFormat = printf(({ level, message, timestamp, stack }) => {
-  return `${timestamp} ${level}: ${stack || message}`
+  return `[${timestamp}] [${level}]: ${stack || message}`
 })
 
 export const logger = createLogger({
