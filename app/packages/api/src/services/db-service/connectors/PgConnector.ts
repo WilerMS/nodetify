@@ -4,6 +4,8 @@ import { type DatabaseConnection } from '@/types/global'
 import { POSTGRES_QUERIES } from '@/services/db-service/utils/queries'
 import { DBConnector } from '@/services/db-service/connectors/DBConnector'
 import { type Column, type ColumnInfo, type Schema } from '../utils/types'
+import { DB_LOG_MESSAGES } from '../utils/messages'
+import { delay } from '@/utils'
 
 // TODO: Mirar si el usuario propuesto tiene los permisos correctos
 // TODO: Mejorar los logs usando los nuevos mensajes
@@ -20,7 +22,7 @@ export class PgConnector extends DBConnector {
       this.client = new Client(this.config)
 
       this.emit('client.connecting', this)
-      this.emit('logger.info', `Connecting to PostgreSQL database ${this.config.database} at ${this.config.host} as user ${this.config.user}`)
+      this.emit('logger.info', DB_LOG_MESSAGES.CLIENT_CONNECTION_ATTEMPT(this))
 
       await this.client.connect()
       // Injecting notification function
@@ -31,7 +33,7 @@ export class PgConnector extends DBConnector {
       // Start notification's listening
       this.client.on('notification', message => {
         if (!message.payload) return
-        this.emit('logger.info', `Notification received from PostgreSQL database ${this.config.database} with ID ${this.id}`)
+        this.emit('logger.info', DB_LOG_MESSAGES.CLIENT_NOTIFICATION(this))
         this.emit('client.notification', JSON.parse(message.payload))
       })
 
@@ -41,20 +43,20 @@ export class PgConnector extends DBConnector {
           clearInterval(this.checkConnectionInterval)
         }
         this.emit('client.error', this)
-        this.emit('logger.error', `Connection unexpectedly lost in PostgreSQL database ${this.config.database} at ${this.config.host}: ${error.message}`)
+        this.emit('logger.error', DB_LOG_MESSAGES.CLIENT_CONNECTION_LOST_ERROR(this), error)
         // start reconnection in 1 minute
         setTimeout(this.reconnect.bind(this), 30000)
       })
 
       this.connected = true
       this.emit('client.connected', this)
-      this.emit('logger.info', `Connected to PostgreSQL database ${this.config.database} at ${this.config.host}`)
+      this.emit('logger.info', DB_LOG_MESSAGES.CLIENT_CONNECTION_SUCCESS(this))
 
       // Check connection each 30 minutes
       this.checkConnectionInterval = setInterval(this.checkConnection.bind(this), 1000 * 60 * 30)
     } catch (error) {
       this.emit('client.error', this)
-      this.emit('logger.error', `Failed to connect to PostgreSQL database ${this.config.database} at ${this.config.host}: ${error as string}`)
+      this.emit('logger.error', DB_LOG_MESSAGES.CLIENT_CONNECTION_ERROR(this))
       // start reconnection in 1 minute
       setTimeout(this.reconnect.bind(this), 30000)
     }
@@ -62,25 +64,27 @@ export class PgConnector extends DBConnector {
 
   // TODO: Implement a max limit of reconnection attemps
   async reconnect (): Promise<void> {
-    this.emit('logger.info', `Preparing reconnection to PostgreSQL database ${this.config.database} at ${this.config.host}`)
-    this.disconnect()
+    this.emit('logger.info', DB_LOG_MESSAGES.CLIENT_RECONNECTION_ATTEMPT(this))
+    this.connected = false
+    await this.client.end()
     await this.connect()
   }
 
   async disconnect (): Promise<void> {
-    this.emit('logger.info', `Disconnected to PostgreSQL database ${this.config.database} at ${this.config.host}`)
     this.connected = false
     await this.client.end()
+    this.emit('logger.info', DB_LOG_MESSAGES.CLIENT_DISCONNECTION(this))
   }
 
   async checkConnection (): Promise<void> {
-    this.emit('logger.info', `Checking connection for database ${this.config.database} with ID ${this.id}.`)
+    this.emit('logger.info', DB_LOG_MESSAGES.CLIENT_CHECK_CONNECTION_ATTEMPT(this))
+    await delay(2000) // Delay to check connection
     try {
       await this.client.query('SELECT 1')
-      this.emit('logger.info', `PostgreSQL connection for database ${this.config.database} at ${this.config.host} is active.`)
+      this.emit('logger.info', DB_LOG_MESSAGES.CLIENT_CHECK_CONNECTION_SUCCESS(this))
       this.emit('client.checkConnection.success', this)
     } catch (error) {
-      this.emit('logger.error', `Connection lost for database ${this.config.database} at ${this.config.host}, reconnecting...`)
+      this.emit('logger.error', DB_LOG_MESSAGES.CLIENT_CHECK_CONNECTION_ERROR(this))
       this.emit('client.checkConnection.error', this)
       await this.reconnect()
     }
