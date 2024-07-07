@@ -27,11 +27,19 @@ export class DatabaseService {
   async start () {
     const databases = await this.databaseModel.query()
     for (const database of databases) {
-      this.addDatabase(database)
+      this.addDatabaseConnection(database)
     }
   }
 
-  async addDatabase (database: Database) {
+  async stop () {
+    const connections = this.connectionHandler.getAllConnections()
+    for (const connection of connections) {
+      await connection.disconnect()
+      this.connectionHandler.removeConnection(connection.id)
+    }
+  }
+
+  addDatabaseConnection (database: Database) {
     const connection = createDatabaseConnection(database)
     const { events } = this.options
 
@@ -65,5 +73,13 @@ export class DatabaseService {
 
     // Add connection to the storage
     this.connectionHandler.addConnection(database.id, connection)
+  }
+
+  getDatabaseConnection (databaseId: number) {
+    const connection = this.connectionHandler.getConnection(databaseId)
+    if (!connection) {
+      throw new Error(`No connection found for database ID: ${databaseId}`)
+    }
+    return connection
   }
 }
