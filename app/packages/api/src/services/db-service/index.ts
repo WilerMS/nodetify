@@ -1,56 +1,43 @@
-import { logger } from '@/utils'
 import { Database } from '@/models'
-import { ConnectionHandler } from './handlers/ConnectionHandler'
-import { type DbClientNotification } from './connectors/DBConnector'
-import { createDatabaseConnection } from './connectors'
-import { type PgConnector } from './connectors/PgConnector'
+import { ConnectionHandler } from './handlers'
+import { DatabaseService } from './DatabaseService'
+import { type IEventHandlers } from './interfaces/IEventHandlers'
+import { type PgConnector } from './connectors'
 
-// TODO: add onConnecting to this even handlers
-interface EventHandlers {
-  onClientNotification: (notification: DbClientNotification) => void
-  onClientConnected: (connection: PgConnector) => void
-  onClientError: (connection: PgConnector) => void
-  onCheckConnectionError: (connection: PgConnector) => void
-  onCheckConnectionSuccess: (connection: PgConnector) => void
+const handleConnected = async (conn: PgConnector) => {
+  const schema = await conn.getSchema()
+  const data = {
+    schema: JSON.stringify(schema),
+    status: 'active' as const,
+    last_checked_at: new Date().toISOString()
+  }
+  await Database.query().findById(conn.id).patch(data)
 }
 
-interface StartDbServiceOptions {
-  events?: EventHandlers
+const updateLastChecked = (status: Database['status']) => {
+  return async (conn: PgConnector) => {
+    const data = {
+      status,
+      last_checked_at: new Date().toISOString()
+    }
+    await Database.query().findById(conn.id).patch(data)
+  }
+}
+
+const events: IEventHandlers = {
+  onClientConnected: handleConnected,
+  onCheckConnectionSuccess: handleConnected,
+  onClientNotification: (notification) => {},
+  onClientConnecting: updateLastChecked('connecting'),
+  onClientError: updateLastChecked('error'),
+  onCheckConnectionError: updateLastChecked('error')
 }
 
 export const connectionHandler = new ConnectionHandler()
-
-export const startDbService = async ({ events }: StartDbServiceOptions) => {
-  const databases = await Database.query()
-
-  for (const database of databases) {
-    const connection = createDatabaseConnection(database)
-
-    connection.on('logger.info', info => logger.info(info))
-    connection.on('logger.error', info => logger.error(info))
-    connection.on('logger.warn', info => logger.warn(info))
-
-    connection.on('client.connected', connection => {
-      events?.onClientConnected?.(connection)
-    })
-
-    connection.on('client.error', data => {
-      events?.onClientError?.(data)
-    })
-
-    connection.on('client.notification', data => {
-      events?.onClientNotification?.(data)
-    })
-
-    connection.on('client.checkConnection.success', data => {
-      events?.onCheckConnectionSuccess?.(data)
-    })
-
-    connection.on('client.checkConnection.error', data => {
-      events?.onCheckConnectionError?.(data)
-    })
-
-    // Add connection to the storage
-    connectionHandler.addConnection(database.id, connection)
+export const databaseService = new DatabaseService(
+  connectionHandler,
+  Database,
+  {
+    events
   }
-}
+)
