@@ -51,4 +51,8 @@ export abstract class DBConnector extends EventEmitter {
   async getSchema (): Promise<Schema[]> {
     throw new Error("Method 'getSchema()' must be implemented.")
   }
+
+  getClassName (): string {
+    return this.constructor.name
+  }
 }
