@@ -8,8 +8,7 @@ import cookieParser from 'cookie-parser'
 import { PORT } from '@/config/env'
 import { errorMiddleware } from '@/middlewares'
 import { apiV1Router } from '@/routes/v1'
-import { startDbService } from './services/db-service'
-import { Database } from './models'
+import { databaseService } from '@/services/db-service'
 
 const main = async () => {
   const app = express()
@@ -36,46 +35,8 @@ const main = async () => {
   // Error handling
   app.use(errorMiddleware)
 
-  // TODO: Refactor this code and move it to separated functions
-  startDbService({
-    events: {
-      onClientConnected: async (conn) => {
-        const schema = await conn.getSchema()
-        const data = {
-          schema: JSON.stringify(schema),
-          status: 'active' as const,
-          last_checked_at: new Date().toISOString()
-        }
-        await Database.query().findById(conn.id).patch(data)
-      },
-      onClientNotification: (notification) => {
-
-      },
-      onCheckConnectionSuccess: async (conn) => {
-        const schema = await conn.getSchema()
-        const data = {
-          schema: JSON.stringify(schema),
-          status: 'active' as const,
-          last_checked_at: new Date().toISOString()
-        }
-        await Database.query().findById(conn.id).patch(data)
-      },
-      onClientError: async (conn) => {
-        const data = {
-          status: 'error' as const,
-          last_checked_at: new Date().toISOString()
-        }
-        await Database.query().findById(conn.id).patch(data)
-      },
-      onCheckConnectionError: async (conn) => {
-        const data = {
-          status: 'error' as const,
-          last_checked_at: new Date().toISOString()
-        }
-        await Database.query().findById(conn.id).patch(data)
-      }
-    }
-  })
+  // Starting services
+  databaseService.start()
 
   app.listen(PORT, () => {
     console.log(`Server on port ${PORT}`)
