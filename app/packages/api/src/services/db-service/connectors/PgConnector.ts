@@ -63,15 +63,14 @@ export class PgConnector extends DBConnector {
   // TODO: Implement a max limit of reconnection attemps
   async reconnect (): Promise<void> {
     this.emit('logger.info', `Preparing reconnection to PostgreSQL database ${this.config.database} at ${this.config.host}`)
-    this.connected = false
-    await this.client.end()
+    this.disconnect()
     await this.connect()
   }
 
   async disconnect (): Promise<void> {
     this.emit('logger.info', `Disconnected to PostgreSQL database ${this.config.database} at ${this.config.host}`)
     this.connected = false
-    this.client.end()
+    await this.client.end()
   }
 
   async checkConnection (): Promise<void> {
