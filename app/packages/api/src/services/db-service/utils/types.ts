@@ -8,7 +8,7 @@ export interface ColumnInfo {
 
 export interface Column {
   name: string
-  type: string
+  type: 'number' | 'string' | 'boolean'
   nullable: boolean
 }
 
