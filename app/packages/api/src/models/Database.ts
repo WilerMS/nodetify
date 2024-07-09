@@ -19,7 +19,7 @@ export class Database extends Model {
   created_at!: string
   updated_at!: string
 
-  async $beforeUpsert () {
+  async encryptConnection () {
     if (this.connection) {
       const connetion: string = typeof this.connection === 'string' ? this.connection : JSON.stringify(this.connection)
       // @ts-expect-error: convert connection to string to save the hash in db
@@ -27,19 +27,27 @@ export class Database extends Model {
     }
   }
 
-  async $beforeInsert () {
-    await this.$beforeUpsert()
-  }
-
-  async $beforeUpdate () {
-    await this.$beforeUpsert()
-  }
-
-  $afterFind () {
+  async decryptConnection () {
     if (typeof this.connection === 'string') {
       const connection = decrypt(DATABASE_SECRET_KEY, this.connection as EncryptedText)
       this.connection = JSON.parse(connection)
     }
+  }
+
+  async $beforeInsert () {
+    await this.encryptConnection()
+  }
+
+  async $beforeUpdate () {
+    await this.encryptConnection()
+  }
+
+  async $afterInsert () {
+    this.decryptConnection()
+  }
+
+  $afterFind () {
+    this.decryptConnection()
   }
 
   static get jsonSchema () {
