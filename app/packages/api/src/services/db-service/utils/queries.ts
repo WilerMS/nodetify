@@ -23,7 +23,7 @@ export const POSTGRES_QUERIES = {
   GET_DATABASE_SCHEMAS: () => sql`
     SELECT table_schema, table_name, column_name, data_type, is_nullable != 'NO' as is_nullable
     FROM information_schema.columns
-    WHERE table_schema NOT IN ('pg_catalog', 'information_schema')
+    WHERE table_schema IN ('public')
     ORDER BY table_schema, table_name
   `
 }
