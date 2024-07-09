@@ -31,6 +31,19 @@ export class Condition extends Model {
     }
   }
 
+  static get bodySchema () {
+    return {
+      type: 'object',
+      required: ['alarm_id', 'column_name', 'operator', 'value'],
+      properties: {
+        alarm_id: { type: 'integer' },
+        column_name: { type: 'string', maxLength: 50 },
+        operator: { type: 'string', maxLength: 2, enum: ['=', '!=', '>', '<', '>=', '<='] },
+        value: { type: 'string', maxLength: 255 }
+      }
+    }
+  }
+
   static get relationMappings () {
     const { Alarm }: AlarmType = require('./Alarm')
 
