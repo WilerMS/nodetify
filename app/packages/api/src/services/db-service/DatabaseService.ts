@@ -9,6 +9,9 @@ interface Options {
   events?: IEventHandlers
 }
 
+// TODO: Implementar un límite de intentos de reconexión
+// TODO: Cuando se acabe el límite, tengo que guardarlo de alguna manera 
+// TODO: Así, el usuario le puede dar a reintentar y los intentos de reconexión empiezan de nuevo
 export class DatabaseService {
   connectionHandler!: ConnectionHandler
   databaseModel!: IDatabase
@@ -81,5 +84,16 @@ export class DatabaseService {
       throw new Error(`No connection found for database ID: ${databaseId}`)
     }
     return connection
+  }
+
+  restartDatabaseConnection (database: Database) {
+    const connection = this.getDatabaseConnection(database.id)
+    connection.reconnect()
+  }
+
+  deleteDatabaseConnection (database: Database) {
+    const connection = this.getDatabaseConnection(database.id)
+    connection.disconnect()
+    this.connectionHandler.removeConnection(connection.id)
   }
 }
