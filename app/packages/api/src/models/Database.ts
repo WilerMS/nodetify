@@ -1,5 +1,6 @@
 import { DATABASE_SECRET_KEY } from '@/config/env'
 import { Model } from '@/config/knex'
+import { type Table } from '@/services/db-service/utils/types'
 import { type DatabaseConnection } from '@/types/global'
 import { encrypt, decrypt, type EncryptedText } from '@/utils'
 
@@ -14,7 +15,7 @@ export class Database extends Model {
   type!: 'PostgreSQL' | 'MySQL' | 'MariaDB' | 'SQLite' | 'SQLServer' | 'Oracle'
   connection!: DatabaseConnection
   status!: 'active' | 'inactive' | 'connecting' | 'error'
-  schema!: string
+  schema!: Table[]
   last_checked_at!: string
   created_at!: string
   updated_at!: string

@@ -3,11 +3,12 @@ import { ConnectionHandler } from './handlers'
 import { DatabaseService } from './DatabaseService'
 import { type IEventHandlers } from './interfaces/IEventHandlers'
 import { type DBConnector } from './connectors'
+import { type Table } from './utils/types'
 
 const handleConnected = async (conn: DBConnector) => {
   const schema = await conn.getSchema()
   const data = {
-    schema: JSON.stringify(schema),
+    schema: JSON.stringify(schema) as unknown as Table[],
     status: 'active' as const,
     last_checked_at: new Date().toISOString()
   }
