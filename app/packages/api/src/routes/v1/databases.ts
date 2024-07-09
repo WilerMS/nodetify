@@ -1,10 +1,11 @@
 import { Router } from 'express'
 
-import { Database } from '@/models'
+import { Alarm, Database } from '@/models'
 import { withErrorHandling } from '@/utils'
 import { NotFoundError } from '@/errors'
 import { authenticateToken, validateBody } from '@/middlewares'
 import { type AuthRequest } from '@/types/global'
+import { databaseService } from '@/services/db-service'
 
 export const router = Router()
 export const endpoint = '/databases'
@@ -47,8 +48,7 @@ router.post(
   validateBody(Database.jsonSchema),
   withErrorHandling(async (req: AuthRequest, res) => {
     const { name, description, type, connection } = req.body
-    const newDatabase = await Database
-      .query()
+    const newDatabase = await Database.query()
       .insert({
         name,
         description,
@@ -56,6 +56,9 @@ router.post(
         connection,
         user_id: req.auth!.user.id
       })
+
+    // Add this db connection
+    databaseService.addDatabaseConnection(newDatabase)
 
     return res.status(201).json(newDatabase)
   })
@@ -88,6 +91,9 @@ router.patch(
         connection
       })
       .returning('*')
+
+    // Restarting db connection
+    databaseService.restartDatabaseConnection(updated as unknown as Database)
 
     return res.json(updated)
   })
