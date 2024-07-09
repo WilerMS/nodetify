@@ -16,8 +16,3 @@ export interface Table {
   name: string
   columns: Column[]
 }
-
-export interface Schema {
-  name: string
-  tables: Table[]
-}
