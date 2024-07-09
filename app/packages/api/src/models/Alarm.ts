@@ -1,7 +1,7 @@
 import { Model } from '@/config/knex'
 import { type Severity } from './Severity'
 import { type Database } from './Database'
-import { type Condition } from './Condition'
+import { Condition } from './Condition'
 import { type Alert } from './Alert'
 
 interface SeverityType { Severity: typeof Severity }
@@ -15,6 +15,7 @@ export class Alarm extends Model {
 
   id!: number
   database_id!: number
+  user_id!: number
   name!: string
   description?: string
   table_name!: string
@@ -26,10 +27,11 @@ export class Alarm extends Model {
   static get jsonSchema () {
     return {
       type: 'object',
-      required: ['database_id', 'name', 'table_name', 'severity_id'],
+      required: ['user_id', 'database_id', 'name', 'table_name', 'severity_id'],
       properties: {
         id: { type: 'integer' },
         database_id: { type: 'integer' },
+        user_id: { type: 'integer' },
         name: { type: 'string', maxLength: 255 },
         description: { type: 'string' },
         table_name: { type: 'string', maxLength: 50 },
@@ -37,6 +39,25 @@ export class Alarm extends Model {
         enabled: { type: 'boolean' },
         created_at: { type: 'string', format: 'date-time' },
         updated_at: { type: 'string', format: 'date-time' }
+      }
+    }
+  }
+
+  static get bodySchema () {
+    return {
+      type: 'object',
+      required: ['user_id', 'database_id', 'name', 'table_name', 'severity_id'],
+      properties: {
+        user_id: { type: 'integer' },
+        database_id: { type: 'integer' },
+        name: { type: 'string', maxLength: 255 },
+        description: { type: 'string' },
+        table_name: { type: 'string', maxLength: 50 },
+        severity_id: { type: 'integer' },
+        condition: {
+          type: 'array',
+          items: Condition.bodySchema
+        }
       }
     }
   }
