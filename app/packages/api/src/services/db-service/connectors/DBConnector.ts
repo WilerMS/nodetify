@@ -1,6 +1,6 @@
 import { EventEmitter } from 'stream'
 import { type DatabaseConnection } from '@/types/global'
-import { type Schema } from '../utils/types'
+import { type Table } from '../utils/types'
 
 export interface DbClientNotification {
   table: string
@@ -48,11 +48,19 @@ export abstract class DBConnector extends EventEmitter {
     throw new Error("Method 'checkConnection()' must be implemented.")
   }
 
-  async getSchema (): Promise<Schema[]> {
+  async getSchema (): Promise<Table[]> {
     throw new Error("Method 'getSchema()' must be implemented.")
   }
 
   getClassName (): string {
     return this.constructor.name
+  }
+
+  /**
+   * Map each database column type and associates it with a simple jsonschema type
+   * @param columnType string
+   */
+  mapColumnTypeToBasicType (columnType: string): 'number' | 'string' | 'boolean' {
+    throw new Error("Method 'mapColumnTypeToBasicType()' must be implemented.")
   }
 }

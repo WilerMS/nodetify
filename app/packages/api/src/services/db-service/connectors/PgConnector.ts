@@ -3,7 +3,7 @@ import { Client } from 'pg'
 import { type DatabaseConnection } from '@/types/global'
 import { POSTGRES_QUERIES } from '@/services/db-service/utils/queries'
 import { DBConnector } from '@/services/db-service/connectors/DBConnector'
-import { type Column, type ColumnInfo, type Schema } from '../utils/types'
+import { type Table, type Column, type ColumnInfo } from '../utils/types'
 import { DB_LOG_MESSAGES } from '../utils/messages'
 import { delay } from '@/utils'
 
@@ -90,28 +90,34 @@ export class PgConnector extends DBConnector {
     }
   }
 
+  mapColumnTypeToBasicType (columnType: string): 'number' | 'string' | 'boolean' {
+    const lowercaseType = columnType.toLowerCase()
+
+    const numbers = ['integer', 'decimal', 'numeric', 'real', 'serial', 'bigserial']
+    const booleans = ['boolean']
+
+    if (numbers.includes(lowercaseType)) return 'number'
+    if (booleans.includes(lowercaseType)) return 'boolean'
+
+    return 'string'
+  }
+
   async getSchema () {
     const data = await this.client.query(POSTGRES_QUERIES.GET_DATABASE_SCHEMAS())
     const rows = data?.rows as ColumnInfo[] ?? []
 
-    const map = new Map<string, Schema>()
+    const map = new Map<string, Table>()
 
     for (const info of rows) {
-      let schema = map.get(info.table_schema)
-      if (!schema) {
-        schema = { name: info.table_schema, tables: [] }
-        map.set(info.table_schema, schema)
-      }
-
-      let table = schema.tables.find(t => t.name === info.table_name)
+      let table = map.get(info.table_name)
       if (!table) {
         table = { name: info.table_name, columns: [] }
-        schema.tables.push(table)
+        map.set(info.table_name, table)
       }
 
       const column: Column = {
         name: info.column_name,
-        type: info.data_type,
+        type: this.mapColumnTypeToBasicType(info.data_type),
         nullable: info.is_nullable
       }
 
