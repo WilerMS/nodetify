@@ -47,7 +47,7 @@ export class DatabaseService {
     const { events } = this.options
 
     connection.on('logger.info', info => logger.info(info))
-    connection.on('logger.error', info => logger.error(info))
+    connection.on('logger.error', (info, error: Error) => logger.error(info, error?.message))
     connection.on('logger.warn', info => logger.warn(info))
 
     connection.on('client.connected', connection => {
