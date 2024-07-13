@@ -56,7 +56,7 @@ export class PgConnector extends DBConnector {
       this.checkConnectionInterval = setInterval(this.checkConnection.bind(this), 1000 * 60 * 30)
     } catch (error) {
       this.emit('client.error', this)
-      this.emit('logger.error', DB_LOG_MESSAGES.CLIENT_CONNECTION_ERROR(this))
+      this.emit('logger.error', DB_LOG_MESSAGES.CLIENT_CONNECTION_ERROR(this), error)
       // start reconnection in 1 minute
       setTimeout(this.reconnect.bind(this), 30000)
     }
