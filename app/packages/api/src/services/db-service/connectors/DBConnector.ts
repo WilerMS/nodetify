@@ -12,7 +12,7 @@ type ClientEventNames = 'client.connected' | 'client.error' | 'client.checkConne
 type LoggerEventNames = 'logger.info' | 'logger.error' | 'logger.warn'
 
 type DbConnectorEvent<T> =
-  ((event: LoggerEventNames, listener: (text: string) => void) => T) &
+  ((event: LoggerEventNames, listener: (text: string, ...args: any[]) => void) => T) &
   ((event: 'client.notification', listener: (notification: DbClientNotification) => void) => T) &
   ((event: ClientEventNames, listener: (obj: T) => void) => T)
 
