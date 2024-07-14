@@ -1,11 +1,10 @@
 import { Client } from 'pg'
 
-import { type DatabaseConnection } from '@/types/global'
-import { POSTGRES_QUERIES } from '@/services/db-service/utils/queries'
-import { DBConnector } from '@/services/db-service/connectors/DBConnector'
-import { type Table, type Column, type ColumnInfo } from '../utils/types'
-import { DB_LOG_MESSAGES } from '../utils/messages'
 import { delay } from '@/utils'
+
+import { DBConnector } from '@/services/db-service/connectors/DBConnector'
+import { DB_LOG_MESSAGES, POSTGRES_QUERIES } from '@/services/db-service/utils'
+import { type ISchema, type ColumnInfo, type Column } from '@/services/db-service/interfaces'
 
 // TODO: Mirar si el usuario propuesto tiene los permisos correctos
 export class PgConnector extends DBConnector {
@@ -35,10 +34,7 @@ export class PgConnector extends DBConnector {
         this.emit('logger.info', DB_LOG_MESSAGES.CLIENT_NOTIFICATION(this))
 
         const notification = JSON.parse(message.payload)
-        const payload = {
-          ...(notification ?? {}),
-          databaseId: this.id
-        }
+        const payload = { ...notification, databaseId: this.id }
         this.emit('client.notification', payload)
       })
 
@@ -96,22 +92,17 @@ export class PgConnector extends DBConnector {
   }
 
   mapColumnTypeToBasicType (columnType: string): 'number' | 'string' | 'boolean' {
-    const lowercaseType = columnType.toLowerCase()
-
-    const numbers = ['integer', 'decimal', 'numeric', 'real', 'serial', 'bigserial']
-    const booleans = ['boolean']
-
-    if (numbers.includes(lowercaseType)) return 'number'
-    if (booleans.includes(lowercaseType)) return 'boolean'
-
+    const lwr = columnType.toLowerCase()
+    if (['integer', 'decimal', 'numeric', 'real', 'serial', 'bigserial'].includes(lwr)) return 'number'
+    if (['boolean'].includes(lwr)) return 'boolean'
     return 'string'
   }
 
-  async getSchema () {
+  async getSchema(): Promise<ISchema> {
     const data = await this.client.query(POSTGRES_QUERIES.GET_DATABASE_SCHEMAS())
     const rows = data?.rows as ColumnInfo[] ?? []
 
-    const map = new Map<string, Table>()
+    const map = new Map<string, ISchema[number]>()
 
     for (const info of rows) {
       let table = map.get(info.table_name)
