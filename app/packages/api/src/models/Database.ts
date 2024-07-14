@@ -1,7 +1,6 @@
 import { DATABASE_SECRET_KEY } from '@/config/env'
 import { Model } from '@/config/knex'
 import { type Table } from '@/services/db-service/utils/types'
-import { type DatabaseConnection } from '@/types/global'
 import { encrypt, decrypt, type EncryptedText } from '@/utils'
 
 export class Database extends Model {
