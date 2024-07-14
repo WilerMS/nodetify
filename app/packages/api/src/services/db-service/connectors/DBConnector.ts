@@ -1,6 +1,5 @@
 import { EventEmitter } from 'stream'
-import { type DatabaseConnection } from '@/types/global'
-import { type Table } from '../utils/types'
+import { type ISchema } from '../interfaces'
 
 export interface DbClientNotification {
   databaseId: number
@@ -49,7 +48,7 @@ export abstract class DBConnector extends EventEmitter {
     throw new Error("Method 'checkConnection()' must be implemented.")
   }
 
-  async getSchema (): Promise<Table[]> {
+  async getSchema (): Promise<ISchema> {
     throw new Error("Method 'getSchema()' must be implemented.")
   }
 
