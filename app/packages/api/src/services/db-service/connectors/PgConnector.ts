@@ -8,7 +8,6 @@ import { DB_LOG_MESSAGES } from '../utils/messages'
 import { delay } from '@/utils'
 
 // TODO: Mirar si el usuario propuesto tiene los permisos correctos
-// TODO: Mejorar los logs usando los nuevos mensajes
 export class PgConnector extends DBConnector {
   client!: Client
 
@@ -34,7 +33,13 @@ export class PgConnector extends DBConnector {
       this.client.on('notification', message => {
         if (!message.payload) return
         this.emit('logger.info', DB_LOG_MESSAGES.CLIENT_NOTIFICATION(this))
-        this.emit('client.notification', JSON.parse(message.payload))
+
+        const notification = JSON.parse(message.payload)
+        const payload = {
+          ...(notification ?? {}),
+          databaseId: this.id
+        }
+        this.emit('client.notification', payload)
       })
 
       // Caching errors to reconnect automatically
