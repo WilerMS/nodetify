@@ -18,7 +18,7 @@ export const POSTGRES_QUERIES = {
     $$ LANGUAGE plpgsql;
   `,
   CREATE_NOTIFY_TRIGGER: (table: string) => sql`
-    CREATE TRIGGER trigger_nodetify_notifications_${table}
+    CREATE OR REPLACE TRIGGER trigger_nodetify_notifications_${table}
     AFTER INSERT OR UPDATE ON ${table}
     FOR EACH ROW
     EXECUTE FUNCTION fn_nodetify_notifications();
