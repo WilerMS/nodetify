@@ -91,6 +91,15 @@ export class PgConnector extends DBConnector {
     }
   }
 
+  async injectTableTrigger(tablename: string) {
+    try {
+      await this.client.query(POSTGRES_QUERIES.CREATE_NOTIFY_TRIGGER(tablename))
+      throw new Error(DB_LOG_MESSAGES.CLIENT_TRIGGER_INJECTION_ERROR(this))
+    } catch (error) {
+      this.emit('logger.info', DB_LOG_MESSAGES.CLIENT_TRIGGER_INJECTION_ERROR(this))
+    }
+  }
+
   mapColumnTypeToBasicType (columnType: string): 'number' | 'string' | 'boolean' {
     const lwr = columnType.toLowerCase()
     if (['integer', 'decimal', 'numeric', 'real', 'serial', 'bigserial'].includes(lwr)) return 'number'
