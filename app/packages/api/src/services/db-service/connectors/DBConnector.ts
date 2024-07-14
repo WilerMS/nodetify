@@ -3,6 +3,7 @@ import { type DatabaseConnection } from '@/types/global'
 import { type Table } from '../utils/types'
 
 export interface DbClientNotification {
+  databaseId: number
   table: string
   type: string
   data: Record<string, any>
