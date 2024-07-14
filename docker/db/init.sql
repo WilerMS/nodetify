@@ -43,6 +43,7 @@ CREATE TABLE database (
 CREATE TABLE alarm (
   id SERIAL PRIMARY KEY,
   database_id INT NOT NULL,
+  user_id INTEGER NOT NULL,
   name TEXT NOT NULL,
   description TEXT,
   table_name TEXT NOT NULL,
@@ -51,7 +52,8 @@ CREATE TABLE alarm (
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   CONSTRAINT fk_alarm_database FOREIGN KEY (database_id) REFERENCES database(id),
-  CONSTRAINT fk_alarm_severity FOREIGN KEY (severity_id) REFERENCES severity(id)
+  CONSTRAINT fk_alarm_severity FOREIGN KEY (severity_id) REFERENCES severity(id),
+  CONSTRAINT fk_alarm_users FOREIGN KEY (user_id) REFERENCES users(id)
 );
 
 CREATE TABLE condition (
