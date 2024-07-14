@@ -63,4 +63,8 @@ export abstract class DBConnector extends EventEmitter {
   mapColumnTypeToBasicType (columnType: string): 'number' | 'string' | 'boolean' {
     throw new Error("Method 'mapColumnTypeToBasicType()' must be implemented.")
   }
+
+  async injectTableTrigger(tablename: string) {
+    throw new Error("Method 'injectTableTrigger()' must be implemented.")
+  }
 }
