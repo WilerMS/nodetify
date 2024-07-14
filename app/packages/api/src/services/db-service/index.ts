@@ -1,5 +1,4 @@
 import { Database } from '@/models'
-import { ConnectionHandler } from './handlers'
 import { DatabaseService } from './DatabaseService'
 import { type IEventHandlers } from './interfaces/IEventHandlers'
 import { type DBConnector } from './connectors'
@@ -34,9 +33,7 @@ const events: IEventHandlers = {
   onCheckConnectionError: updateLastChecked('error')
 }
 
-export const connectionHandler = new ConnectionHandler()
 export const databaseService = new DatabaseService(
-  connectionHandler,
   Database,
   {
     events
