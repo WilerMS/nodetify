@@ -1,10 +1,9 @@
 import { Router } from 'express'
 
-import { Alarm, Database } from '@/models'
+import { Database } from '@/models'
 import { withErrorHandling } from '@/utils'
 import { NotFoundError } from '@/errors'
 import { authenticateToken, validateBody } from '@/middlewares'
-import { type AuthRequest } from '@/types/global'
 import { databaseService } from '@/services/db-service'
 
 export const router = Router()
@@ -58,7 +57,7 @@ router.post(
       })
 
     // Add this db connection
-    databaseService.addDatabaseConnection(newDatabase)
+    databaseService.addConnection(newDatabase)
 
     return res.status(201).json(newDatabase)
   })
@@ -93,7 +92,7 @@ router.patch(
       .returning('*')
 
     // Restarting db connection
-    databaseService.restartDatabaseConnection(updated as unknown as Database)
+    databaseService.restartConnection(updated as unknown as Database)
 
     return res.json(updated)
   })
