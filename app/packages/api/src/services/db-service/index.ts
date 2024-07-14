@@ -27,15 +27,11 @@ const updateLastChecked = (status: Database['status']) => {
 const events: IEventHandlers = {
   onClientConnected: handleConnected,
   onCheckConnectionSuccess: handleConnected,
-  onClientNotification: (notification) => {},
   onClientConnecting: updateLastChecked('connecting'),
   onClientError: updateLastChecked('error'),
   onCheckConnectionError: updateLastChecked('error')
 }
 
-export const databaseService = new DatabaseService(
-  Database,
-  {
-    events
-  }
-)
+const options = { events }
+
+export const databaseService = new DatabaseService(options)
