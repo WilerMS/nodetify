@@ -1,3 +1,3 @@
 import { type Database } from '@/models'
 
-export type IDatabase = typeof Database
+export type IDatabaseModel = typeof Database
