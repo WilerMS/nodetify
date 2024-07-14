@@ -1,8 +1,6 @@
-import { createDatabaseConnection, type DBConnector } from './connectors'
-import { type IDatabaseModel } from './interfaces/IDatabase'
-import { type Database } from '@/models'
 import { logger } from '@/utils'
-import { type IEventHandlers } from './interfaces/IEventHandlers'
+import { type IDatabase, type IEventHandlers } from './interfaces'
+import { createDatabaseConnection, type DBConnector } from './connectors'
 
 interface Options {
   events?: IEventHandlers
@@ -12,20 +10,16 @@ interface Options {
 // TODO: Cuando se acabe el límite, tengo que guardarlo de alguna manera
 // TODO: Así, el usuario le puede dar a reintentar y los intentos de reconexión empiezan de nuevo
 export class DatabaseService {
-  databaseModel!: IDatabaseModel
   options!: Options
 
   connections!: Map<number, DBConnector>
 
-  constructor (dbModel: IDatabaseModel, options: Options) {
-    this.databaseModel = dbModel
+  constructor (options: Options) {
     this.options = options
-
     this.connections = new Map()
   }
 
-  async start() {
-    const databases = await this.databaseModel.query()
+  async start(databases: IDatabase[]) {
     for (const database of databases) {
       this.addConnection(database)
     }
@@ -51,7 +45,7 @@ export class DatabaseService {
     return Array.from(this.connections.values())
   }
 
-  addConnection(database: Database) {
+  addConnection(database: IDatabase) {
     const connection = createDatabaseConnection(database)
     const { events } = this.options
 
@@ -71,10 +65,6 @@ export class DatabaseService {
       events?.onClientError?.(data)
     })
 
-    connection.on('client.notification', data => {
-      events?.onClientNotification?.(data)
-    })
-
     connection.on('client.checkConnection.success', data => {
       events?.onCheckConnectionSuccess?.(data)
     })
@@ -87,12 +77,12 @@ export class DatabaseService {
     this.connections.set(database.id, connection)
   }
 
-  async restartConnection(database: Database) {
+  async restartConnection(database: IDatabase) {
     const connection = this.getConnection(database.id)
     await connection.reconnect()
   }
 
-  async deleteConnection(database: Database) {
+  async deleteConnection(database: IDatabase) {
     const connection = this.getConnection(database.id)
     await connection.disconnect()
     this.connections.delete(connection.id)
