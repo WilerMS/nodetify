@@ -46,9 +46,8 @@ export class Alarm extends Model {
   static get bodySchema () {
     return {
       type: 'object',
-      required: ['user_id', 'database_id', 'name', 'table_name', 'severity_id'],
+      required: ['database_id', 'name', 'table_name', 'severity_id'],
       properties: {
-        user_id: { type: 'integer' },
         database_id: { type: 'integer' },
         name: { type: 'string', maxLength: 255 },
         description: { type: 'string' },
