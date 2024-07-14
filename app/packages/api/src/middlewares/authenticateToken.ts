@@ -4,7 +4,6 @@ import { User } from '@/models'
 import { JWT_SECRET } from '@/config/env'
 import { UnauthorizedError } from '@/errors'
 import { withErrorHandling } from '@/utils'
-import { type AuthRequest } from '@/types/global'
 
 export const authenticateToken = withErrorHandling(async (
   req: AuthRequest,
