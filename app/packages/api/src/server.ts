@@ -9,6 +9,8 @@ import { PORT } from '@/config/env'
 import { errorMiddleware } from '@/middlewares'
 import { apiV1Router } from '@/routes/v1'
 import { databaseService } from '@/services/db-service'
+import { Alarm, Database } from '@/models'
+import { AlarmService } from './services/alarms-service'
 
 const main = async () => {
   const app = express()
@@ -35,8 +37,21 @@ const main = async () => {
   // Error handling
   app.use(errorMiddleware)
 
-  // Starting services
-  databaseService.start()
+  // SERVICES
+
+  // [DB SERVICE] - started
+  const databases = await Database.query()
+  databaseService.start(databases)
+  // [ALARM SERVICE] - started
+  const alarmService = new AlarmService(databaseService)
+  const alarms = await Alarm.query()
+  alarmService.start(alarms)
+
+  // TODO: Iniciar el servicio de alarmas, pasandole el databaseSevice para que use las conexiones
+  // TODO: Ahí dentro tengo que tener métodos o algo así para inyectar los triggers de las alarmas
+  // TODO: Engancharme al evento "client.notification" y ejecutar un método que procese las alarmas
+  // TODO: Idear un servicio o proceso que haga la notificación a la aplicación web (websocket???)
+  // TODO: Quizas renta tener un redis para el facil acceso a las alarmas desde la app?
 
   app.listen(PORT, () => {
     console.log(`Server on port ${PORT}`)
