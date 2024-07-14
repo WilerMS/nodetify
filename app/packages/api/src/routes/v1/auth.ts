@@ -7,7 +7,6 @@ import { JWT_SECRET } from '@/config/env'
 import { delay, withErrorHandling } from '@/utils'
 import { authenticateToken, validateBody } from '@/middlewares'
 import { BadRequestError, ConflictError, UnauthorizedError } from '@/errors'
-import { type AuthRequest } from '@/types/global'
 
 type LoginBodyType = Pick<User, 'username' | 'password'>
 type RegisterBodyType = Pick<User, 'name' | 'username' | 'password' | 'email'>
