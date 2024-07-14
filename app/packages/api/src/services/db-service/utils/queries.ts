@@ -5,10 +5,13 @@ export const POSTGRES_QUERIES = {
     CREATE OR REPLACE FUNCTION fn_nodetify_notifications()
     RETURNS TRIGGER AS $$
     BEGIN
-      PERFORM pg_notify('nodetify', json_build_object(
-        'table', TG_TABLE_NAME,
-        'type', TG_OP,
-        'data', row_to_json(NEW))::text
+      PERFORM pg_notify(
+        'nodetify', 
+        json_build_object(
+          'table', TG_TABLE_NAME,
+          'type', TG_OP,
+          'data', row_to_json(NEW)
+        )::text
       );
       RETURN NEW;
     END;
