@@ -1,6 +1,5 @@
-import { type ConnectionHandler } from './handlers'
-import { createDatabaseConnection } from './connectors'
-import { type IDatabase } from './interfaces/IDatabase'
+import { createDatabaseConnection, type DBConnector } from './connectors'
+import { type IDatabaseModel } from './interfaces/IDatabase'
 import { type Database } from '@/models'
 import { logger } from '@/utils'
 import { type IEventHandlers } from './interfaces/IEventHandlers'
@@ -10,39 +9,49 @@ interface Options {
 }
 
 // TODO: Implementar un límite de intentos de reconexión
-// TODO: Cuando se acabe el límite, tengo que guardarlo de alguna manera 
+// TODO: Cuando se acabe el límite, tengo que guardarlo de alguna manera
 // TODO: Así, el usuario le puede dar a reintentar y los intentos de reconexión empiezan de nuevo
 export class DatabaseService {
-  connectionHandler!: ConnectionHandler
-  databaseModel!: IDatabase
+  databaseModel!: IDatabaseModel
   options!: Options
 
-  constructor (
-    connectionHandler: ConnectionHandler,
-    databaseModel: IDatabase,
-    options: Options
-  ) {
-    this.connectionHandler = connectionHandler
-    this.databaseModel = databaseModel
+  connections!: Map<number, DBConnector>
+
+  constructor (dbModel: IDatabaseModel, options: Options) {
+    this.databaseModel = dbModel
     this.options = options
+
+    this.connections = new Map()
   }
 
-  async start () {
+  async start() {
     const databases = await this.databaseModel.query()
     for (const database of databases) {
-      this.addDatabaseConnection(database)
+      this.addConnection(database)
     }
   }
 
-  async stop () {
-    const connections = this.connectionHandler.getAllConnections()
+  async stop() {
+    const connections = this.getConnections()
     for (const connection of connections) {
       await connection.disconnect()
-      this.connectionHandler.removeConnection(connection.id)
+      this.connections.delete(connection.id)
     }
   }
 
-  addDatabaseConnection (database: Database) {
+  getConnection(databaseId: number) {
+    const connection = this.connections.get(databaseId)
+    if (!connection) {
+      throw new Error(`No connection found for database ID: ${databaseId}`)
+    }
+    return connection
+  }
+
+  getConnections() {
+    return Array.from(this.connections.values())
+  }
+
+  addConnection(database: Database) {
     const connection = createDatabaseConnection(database)
     const { events } = this.options
 
@@ -75,25 +84,17 @@ export class DatabaseService {
     })
 
     // Add connection to the storage
-    this.connectionHandler.addConnection(database.id, connection)
+    this.connections.set(database.id, connection)
   }
 
-  getDatabaseConnection (databaseId: number) {
-    const connection = this.connectionHandler.getConnection(databaseId)
-    if (!connection) {
-      throw new Error(`No connection found for database ID: ${databaseId}`)
-    }
-    return connection
+  async restartConnection(database: Database) {
+    const connection = this.getConnection(database.id)
+    await connection.reconnect()
   }
 
-  restartDatabaseConnection (database: Database) {
-    const connection = this.getDatabaseConnection(database.id)
-    connection.reconnect()
-  }
-
-  deleteDatabaseConnection (database: Database) {
-    const connection = this.getDatabaseConnection(database.id)
-    connection.disconnect()
-    this.connectionHandler.removeConnection(connection.id)
+  async deleteConnection(database: Database) {
+    const connection = this.getConnection(database.id)
+    await connection.disconnect()
+    this.connections.delete(connection.id)
   }
 }
