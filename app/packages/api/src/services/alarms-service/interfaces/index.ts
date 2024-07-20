@@ -1,2 +1,2 @@
 export * from './IAlarm'
-export * from './ICache'
+export * from './IAlarmServiceCache'
