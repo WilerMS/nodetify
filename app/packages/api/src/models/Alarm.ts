@@ -24,6 +24,11 @@ export class Alarm extends Model {
   created_at!: string
   updated_at!: string
 
+  severity?: Severity
+  database?: Database
+  condition?: Condition[]
+  alerts?: Alert[]
+
   static get jsonSchema () {
     return {
       type: 'object',
@@ -84,12 +89,12 @@ export class Alarm extends Model {
           to: 'database.id'
         }
       },
-      conditions: {
+      condition: {
         relation: Model.HasManyRelation,
         modelClass: Condition,
         join: {
           from: 'alarm.id',
-          to: 'conditions.alarm_id'
+          to: 'condition.alarm_id'
         }
       },
       alerts: {
