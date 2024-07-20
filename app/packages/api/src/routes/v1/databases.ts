@@ -4,7 +4,6 @@ import { Database } from '@/models'
 import { withErrorHandling } from '@/utils'
 import { NotFoundError } from '@/errors'
 import { authenticateToken, validateBody } from '@/middlewares'
-import { databaseService } from '@/services/db-service'
 
 export const router = Router()
 export const endpoint = '/databases'
@@ -56,9 +55,6 @@ router.post(
         user_id: req.auth!.user.id
       })
 
-    // Add this db connection
-    databaseService.addConnection(newDatabase)
-
     return res.status(201).json(newDatabase)
   })
 )
@@ -90,9 +86,6 @@ router.patch(
         connection
       })
       .returning('*')
-
-    // Restarting db connection
-    databaseService.restartConnection(updated as unknown as Database)
 
     return res.json(updated)
   })
