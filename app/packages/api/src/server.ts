@@ -8,9 +8,10 @@ import cookieParser from 'cookie-parser'
 import { PORT } from '@/config/env'
 import { errorMiddleware } from '@/middlewares'
 import { apiV1Router } from '@/routes/v1'
-import { databaseService } from '@/services/db-service'
+
 import { Alarm, Database } from '@/models'
-import { AlarmService } from './services/alarms-service'
+import { DatabaseService } from '@/services/db-service'
+import { AlarmService } from '@/services/alarms-service'
 
 const main = async () => {
   const app = express()
@@ -38,14 +39,14 @@ const main = async () => {
   app.use(errorMiddleware)
 
   // SERVICES
+  const alarms = await Alarm.query().withGraphFetched('[condition]')
+  const alarmService = new AlarmService(alarms)
+  const databaseService = new DatabaseService(alarmService, Database)
 
-  // [DB SERVICE] - started
-  const databases = await Database.query()
-  databaseService.start(databases)
-  // [ALARM SERVICE] - started
-  const alarmService = new AlarmService(databaseService)
-  const alarms = await Alarm.query()
-  alarmService.start(alarms)
+  app.set('AlarmService', alarmService)
+  app.set('DatabaseService', databaseService)
+
+  databaseService.start()
 
   // TODO: Iniciar el servicio de alarmas, pasandole el databaseSevice para que use las conexiones
   // TODO: Ahí dentro tengo que tener métodos o algo así para inyectar los triggers de las alarmas
