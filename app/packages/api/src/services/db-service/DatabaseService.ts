@@ -1,17 +1,8 @@
 import { logger } from '@/utils'
+import { type AlarmService } from '@/services/alarms-service'
 import { createDatabaseConnection, type DbClientNotification, type DBConnector } from './connectors'
-import { type AlarmService } from '../alarms-service'
+import { type IDatabase, type IDatabaseModel, type IConnectionCache, type Table } from './interfaces'
 
-import {
-  type IDatabase,
-  type IDatabaseModel,
-  type IConnectionCache,
-  type Table
-} from './interfaces'
-
-// TODO: Implementar un límite de intentos de reconexión
-// TODO: Cuando se acabe el límite, tengo que guardarlo de alguna manera
-// TODO: Así, el usuario le puede dar a reintentar y los intentos de reconexión empiezan de nuevo
 export class DatabaseService {
   connections!: IConnectionCache
   alarmService!: AlarmService
@@ -21,6 +12,9 @@ export class DatabaseService {
     this.dbModel = dbModel
     this.alarmService = alarmService
     this.connections = new Map()
+
+    // * Register the current instance of DatabaseService to AlarmService
+    this.alarmService.registerDatabaseServiceInstance(this)
   }
 
   async start() {
@@ -70,18 +64,15 @@ export class DatabaseService {
   private registerEvents(connection: DBConnector) {
     const events = this.eventHandlers()
 
-    connection.on('logger.info', info => logger.info(info))
-    connection.on('logger.error', (info, error: Error) => logger.error(info, error?.message))
-    connection.on('logger.warn', info => logger.warn(info))
+    connection.on('logger.info', logger.info.bind(logger))
+    connection.on('logger.error', logger.error.bind(logger))
+    connection.on('logger.warn', logger.warn.bind(logger))
     connection.on('client.connected', events.onClientConnected)
     connection.on('client.connecting', events.onClientConnecting)
     connection.on('client.error', events.onClientError)
     connection.on('client.checkConnection.success', events.onCheckConnectionSuccess)
     connection.on('client.checkConnection.error', events.onCheckConnectionError)
-
-    connection.on('client.notification', notification => {
-      this.handleNotification(notification)
-    })
+    connection.on('client.notification', this.handleNotification.bind(this))
   }
 
   private handleNotification(notification: DbClientNotification) {
