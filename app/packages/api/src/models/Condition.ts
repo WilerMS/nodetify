@@ -18,28 +18,27 @@ export class Condition extends Model {
   static get jsonSchema () {
     return {
       type: 'object',
-      required: ['alarm_id', 'column_name', 'operator', 'value'],
+      required: ['column_name', 'operator', 'value'],
       properties: {
         id: { type: 'integer' },
         alarm_id: { type: 'integer' },
         column_name: { type: 'string', maxLength: 50 },
         operator: { type: 'string', maxLength: 2, enum: ['=', '!=', '>', '<', '>=', '<='] },
-        value: { type: 'string', maxLength: 255 },
+        value: { type: ['string', 'number', 'boolean'], maxLength: 255 },
         created_at: { type: 'string', format: 'date-time' },
         updated_at: { type: 'string', format: 'date-time' }
       }
     }
   }
 
-  static get bodySchema () {
+  static get graphSchema () {
     return {
       type: 'object',
-      required: ['alarm_id', 'column_name', 'operator', 'value'],
+      required: ['column_name', 'operator', 'value'],
       properties: {
-        alarm_id: { type: 'integer' },
         column_name: { type: 'string', maxLength: 50 },
         operator: { type: 'string', maxLength: 2, enum: ['=', '!=', '>', '<', '>=', '<='] },
-        value: { type: 'string', maxLength: 255 }
+        value: { type: ['string', 'number', 'boolean'], maxLength: 255 }
       }
     }
   }

@@ -60,7 +60,7 @@ export class Alarm extends Model {
         severity_id: { type: 'integer' },
         condition: {
           type: 'array',
-          items: Condition.bodySchema
+          items: Condition.graphSchema
         }
       }
     }
