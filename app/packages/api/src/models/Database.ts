@@ -1,7 +1,11 @@
 import { DATABASE_SECRET_KEY } from '@/config/env'
 import { Model } from '@/config/knex'
-import { type Table } from '@/services/db-service/utils/types'
+import { type Table } from '@/services/db-service/interfaces'
 import { encrypt, decrypt, type EncryptedText } from '@/utils'
+import { type Alarm, type User } from '.'
+
+interface UserType { User: typeof User }
+interface AlarmType { Alarm: typeof Alarm }
 
 export class Database extends Model {
   static tableName = 'database'
@@ -87,6 +91,26 @@ export class Database extends Model {
   }
 
   static get relationMappings () {
-    return {}
+    const { User }: UserType = require('.')
+    const { Alarm }: AlarmType = require('.')
+
+    return {
+      users: {
+        relation: Model.BelongsToOneRelation,
+        modelClass: User,
+        join: {
+          from: 'database.user_id',
+          to: 'users.id'
+        }
+      },
+      alarm: {
+        relation: Model.HasManyRelation,
+        modelClass: Alarm,
+        join: {
+          from: 'database.id',
+          to: 'alarm.database_id'
+        }
+      }
+    }
   }
 }
