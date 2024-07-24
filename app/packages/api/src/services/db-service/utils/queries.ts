@@ -23,6 +23,11 @@ export const POSTGRES_QUERIES = {
     FOR EACH ROW
     EXECUTE FUNCTION fn_nodetify_notifications();
   `,
+  CHECK_NOTIFY_TRIGGER: (table: string) => sql`
+    SELECT COUNT(*) > 0 as trigger_exists
+    FROM information_schema.triggers 
+    WHERE trigger_name = trigger_nodetify_notifications_${table};
+  `,
   GET_DATABASE_SCHEMAS: () => sql`
     SELECT table_schema, table_name, column_name, data_type, is_nullable != 'NO' as is_nullable
     FROM information_schema.columns
