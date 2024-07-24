@@ -1,7 +1,6 @@
 import { Client } from 'pg'
 
 import { delay } from '@/utils'
-
 import { DBConnector } from '@/services/db-service/connectors/DBConnector'
 import { DB_LOG_MESSAGES, POSTGRES_QUERIES } from '@/services/db-service/utils'
 import { type ISchema, type ColumnInfo, type Column } from '@/services/db-service/interfaces'
@@ -93,6 +92,15 @@ export class PgConnector extends DBConnector {
 
   async injectTableTrigger(tablename: string) {
     try {
+      this.emit('logger.info', DB_LOG_MESSAGES.CLIENT_TRIGGER_INJECTION_CHECK_ATTEMPT(this, tablename))
+      const result = await this.client.query(POSTGRES_QUERIES.CHECK_NOTIFY_TRIGGER(tablename))
+      const exist = result.rows[0].trigger_exists
+
+      if (exist) {
+        this.emit('logger.info', DB_LOG_MESSAGES.CLIENT_TRIGGER_INJECTION_CHECK_EXISTS(this, tablename))
+        return
+      }
+
       await this.client.query(POSTGRES_QUERIES.CREATE_NOTIFY_TRIGGER(tablename))
       this.emit('logger.info', DB_LOG_MESSAGES.CLIENT_TRIGGER_INJECTION_SUCCESS(this))
     } catch (error) {
@@ -102,7 +110,8 @@ export class PgConnector extends DBConnector {
 
   mapColumnTypeToBasicType (columnType: string): 'number' | 'string' | 'boolean' {
     const lwr = columnType.toLowerCase()
-    if (['integer', 'decimal', 'numeric', 'real', 'serial', 'bigserial'].includes(lwr)) return 'number'
+    const numberTypes = ['integer', 'decimal', 'numeric', 'real', 'serial', 'bigserial']
+    if (numberTypes.includes(lwr)) return 'number'
     if (['boolean'].includes(lwr)) return 'boolean'
     return 'string'
   }
