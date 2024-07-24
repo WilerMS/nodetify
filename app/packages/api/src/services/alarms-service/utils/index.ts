@@ -1,5 +1,5 @@
 import { type Condition } from '@/models'
-import { type Column } from '@/services/db-service/utils'
+import { type Column } from '@/services/db-service/interfaces'
 
 export const validateAlarmConditionOperator = (condition: Condition, column: Column) => {
   if (column.type === 'boolean' && ['=', '!='].includes(condition.operator)) return true
