@@ -4,7 +4,7 @@ import { Alarm, Database, Severity } from '@/models'
 import { withErrorHandling } from '@/utils'
 import { BadRequestError, NotFoundError } from '@/errors'
 import { authenticateToken, validateBody } from '@/middlewares'
-import { type Column } from '@/services/db-service/utils/types'
+import { type Column } from '@/services/db-service/interfaces'
 import { type AlarmService } from '@/services/alarms-service'
 import { validateAlarmConditionOperator, validateAlarmConditionValue } from '@/services/alarms-service/utils'
 
