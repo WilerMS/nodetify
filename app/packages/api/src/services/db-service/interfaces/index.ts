@@ -1,5 +1,5 @@
-import { type DBConnector, type PgConnector } from '../connectors'
 import { type Database } from '@/models'
+import { type DBConnector, type PgConnector } from '../connectors'
 
 export type IDatabaseModel = typeof Database
 export interface IDatabase extends Database {}
